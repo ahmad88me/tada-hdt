@@ -1,3 +1,6 @@
+# Ignore swap temp files
+*.swp
+
 # Ignore HDT files
 *.hdt*
 
