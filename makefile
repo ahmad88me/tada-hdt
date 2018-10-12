@@ -1,9 +1,9 @@
-HEADERS = filter_num.h
+HEADERS = filter_num.h logger.h
 #headers = 
-OBJS = main.o filter_num.o
+OBJS = main.o filter_num.o logger.o
 #objects = main.o
 #SOURCES = filter_numerical_columns.c main.c
-SOURCES = main.cpp filter_num.cpp
+SOURCES = main.cpp filter_num.cpp logger.cpp
 CXXFLAGS = -std=c++11 
 CC = g++
 OBJ_DIR = build
