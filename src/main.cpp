@@ -12,7 +12,7 @@ using namespace std;
 using namespace hdt;
 
 int main(){
-    store_num_cols("dbpedia_all.hdt", "class_property_all.tsv", "somefile.out");
+    store_num_cols("dbpedia_all.hdt", "class_property_all.tsv" );
     cout << "\nDone\n";
     return 0;
 }
