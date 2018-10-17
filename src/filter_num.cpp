@@ -42,6 +42,7 @@ void store_num_cols(string hdt_file_dir, string in_file_dir){
     ifstream in_file(in_file_dir);
     processed = get_processed_classes();
     bool found;
+    int num_of_processed=0; // number of processed classes
     if(in_file.is_open()){
         while(getline(in_file, line)){
             class_uri = get_class_from_line(line);
@@ -50,12 +51,15 @@ void store_num_cols(string hdt_file_dir, string in_file_dir){
                 if((*it)==class_uri){
                     log(logfname, "The class "+class_uri+" is already processed");
                     found = 1; 
+                    num_of_processed++;
                     break;
                 }    
             }
             if(!found){
                 store_single_class(hdt, line);
+                num_of_processed++;
             }
+            log(logfname, "Processed classes: "+to_string(num_of_processed));
             //break;
         }
     }
@@ -66,16 +70,20 @@ void store_num_cols(string hdt_file_dir, string in_file_dir){
 }
 
 void store_single_class(HDT* hdt, string line){
+    int i=0;
     string property_uri, class_uri;
     std::list<string> *properties;
     std::list<string> *instances;
     class_uri = get_class_from_line(line);
+    log(logfname, "getting properties for: "+class_uri);
     properties = get_properties_from_line(line);
+    log(logfname, "getting instances for: "+class_uri);
     instances = get_instances(hdt, class_uri);
     std::list<string> * num_pros = new std::list<string>;
-    for(auto it=properties->cbegin();it != properties->cend();it++){
+    for(auto it=properties->cbegin();it != properties->cend();it++, i++){
         property_uri = *it;
         log(logfname, "processing: "+class_uri+"\t"+property_uri);
+        log(logfname, "property progress: ("+to_string(i*100/properties->size())+" %)");
         if(isNumeric(hdt, instances, property_uri)){
             num_pros->push_back(property_uri);
         }
@@ -122,6 +130,7 @@ bool isNumeric(HDT *hdt, std::list<string> *instances, string property_uri){
         }
     }
     log(logfname, "nums: "+to_string(num_of_num)+"  literals: "+to_string(num_of_lit));
+    //delete triple;
     delete it; // Remember to delete iterator to avoid memory leaks!
     return num_of_num > num_of_lit;
 }
@@ -152,16 +161,18 @@ bool str_to_double(string s, double & val){
 string get_class_from_line(string line){
     int i;
     for(i=0;i<line.length();i++){
-        if(line[i]=='\t'){
+        if(line[i]=='\t' || line[i]=='\n'){
             return line.substr(0,i);
         }
     }
-    return "";
+    return line;
+    //return "";
 }
 
 std::list<string>* get_instances(HDT* hdt, string class_uri){
     std::list<string> *instances;
     instances = new std::list<string>;
+    //log(logfname, "getting instances for: "+class_uri);
     IteratorTripleString *it = hdt->search("", "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",class_uri.c_str());
     TripleString *triple;
     while(it->hasNext()){
@@ -170,6 +181,7 @@ std::list<string>* get_instances(HDT* hdt, string class_uri){
         //return instances;
     }
     delete it;
+    //delete triple;
     log(logfname, "num of instances: "+to_string(instances->size()));
     return instances;
 }
