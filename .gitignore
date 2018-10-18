@@ -1,3 +1,6 @@
+# massif output
+massif.*
+
 # For now adding the working file
 class_property_num.tsv
 
