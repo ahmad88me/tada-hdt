@@ -14,3 +14,7 @@ This application is intended for processing intermediate files from TADA-NumCol
 
 # Run
 `make run`
+
+# Debug
+`make debug`
+It will generate massif output
