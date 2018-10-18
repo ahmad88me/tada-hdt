@@ -32,7 +32,14 @@ $(OBJS_ABS): $(SOURCES_ABS)
 	$(CC) $(CXXFLAGS) -c $(SOURCES_ABS)
 	mv *.o build/
 
-.PHONY: clean run
+.PHONY: clean run debug
+
+debug: 
+	$(CC) $(CXXFLAGS) -g -c $(SOURCES_ABS)
+	mv *.o build/
+	$(CC) -g  -o bin/tadanum $(OBJS_ABS) $(LIBS)
+	#gdb bin/tadanum
+	valgrind --tool=massif bin/tadanum --time-unit=B --stacks=yes
 
 run: 
 	bin/tadanum

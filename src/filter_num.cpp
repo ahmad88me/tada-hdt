@@ -29,20 +29,29 @@ std::list<string>* get_processed_classes(){
             classes->push_back(get_class_from_line(line));
         }
     }
+    else{
+        cout << "unable to open the file: " << numfile << endl;
+    }
     return classes;
 }
 
 void store_num_cols(string hdt_file_dir, string in_file_dir){
     HDT *hdt = HDTManager::mapHDT(hdt_file_dir.c_str());
     //HDT *hdt = HDTManager::mapHDT("/Users/aalobaid/workspaces/Cworkspace/TADA-HDT/dbpedia_all.hdt");
-    std::list<string> *properties;
-    std::list<string> *instances;
+    //std::list<string> *properties;
+    //std::list<string> *instances;
     std::list<string> *processed;
     string line, class_uri;
     ifstream in_file(in_file_dir);
     processed = get_processed_classes();
     bool found;
     int num_of_processed=0; // number of processed classes
+    // testing block
+    //cout<< "testing one specific" << endl;
+    //store_single_class(hdt, "http://dbpedia.org/ontology/Village\thttp://dbpedia.org/property/areaImperial");
+    //cout<< "done"<<endl;
+    //return;
+    // testing block
     if(in_file.is_open()){
         while(getline(in_file, line)){
             class_uri = get_class_from_line(line);
@@ -74,12 +83,12 @@ void store_single_class(HDT* hdt, string line){
     string property_uri, class_uri;
     std::list<string> *properties;
     std::list<string> *instances;
+    std::list<string> * num_pros = new std::list<string>;
     class_uri = get_class_from_line(line);
     log(logfname, "getting properties for: "+class_uri);
     properties = get_properties_from_line(line);
     log(logfname, "getting instances for: "+class_uri);
     instances = get_instances(hdt, class_uri);
-    std::list<string> * num_pros = new std::list<string>;
     for(auto it=properties->cbegin();it != properties->cend();it++, i++){
         property_uri = *it;
         log(logfname, "processing: "+class_uri+"\t"+property_uri);
@@ -113,14 +122,12 @@ bool isNumeric(HDT *hdt, std::list<string> *instances, string property_uri){
     long num_of_num=0, num_of_lit=0;
     double v=0;
     int i;
-    string holder;
     IteratorTripleString *it;
     TripleString * triple;
     for(auto ins_it=instances->cbegin();ins_it!=instances->cend();ins_it++){
         it = hdt->search((*ins_it).c_str(),property_uri.c_str(),"");
         if(it->hasNext()){
             triple = it->next();
-            triple->getObject();
             if(str_to_double(triple->getObject(),v)){
                 num_of_num++;
             }
