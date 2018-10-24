@@ -52,6 +52,7 @@ void store_num_cols(string hdt_file_dir, string in_file_dir){
     //cout<< "done"<<endl;
     //return;
     // testing block
+    log(logfname, "the number of processed classes: "+to_string(processed->size()));
     if(in_file.is_open()){
         while(getline(in_file, line)){
             class_uri = get_class_from_line(line);
@@ -135,10 +136,11 @@ bool isNumeric(HDT *hdt, std::list<string> *instances, string property_uri){
                 num_of_lit++;
             }
         }
+        delete it;
     }
     log(logfname, "nums: "+to_string(num_of_num)+"  literals: "+to_string(num_of_lit));
     //delete triple;
-    delete it; // Remember to delete iterator to avoid memory leaks!
+    //delete it; // Remember to delete iterator to avoid memory leaks!
     return num_of_num > num_of_lit;
 }
 

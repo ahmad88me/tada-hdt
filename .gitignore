@@ -2,7 +2,8 @@
 massif.*
 
 # For now adding the working file
-class_property_num.tsv
+#class_property_num.tsv
+*-bak*
 
 # logs
 *.log
