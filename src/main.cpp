@@ -7,12 +7,14 @@
 #include <list>
 #include <fstream>
 #include "filter_num.h"
+#include "features.h"
 
 using namespace std;
 using namespace hdt;
 
 int main(){
-    store_num_cols("dbpedia_all.hdt", "class_property_all.tsv" );
+    //store_num_cols("dbpedia_all.hdt", "class_property_all.tsv" );
+    test_enty_point();
     cout << "\nDone\n";
     return 0;
 }
