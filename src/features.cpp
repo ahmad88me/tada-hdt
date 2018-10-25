@@ -166,7 +166,7 @@ string get_class_prop_features_line(HDT* hdt, string class_uri, string property_
     return line;
 }
 
-clspropair*  get_clspropairs_from_line(string line){
+clspropair*  get_clspropair_from_line(string line){
     int i; 
     string t;
     clspropair * pair = new clspropair;
@@ -174,7 +174,7 @@ clspropair*  get_clspropairs_from_line(string line){
     int start_idx = 0;
     int len;
     for(i=0;i<line.length();i++){
-        if(line[i]=='\t'){
+        if(line[i]=='\t' || line[i]=='\n' || i==line.length()-1){
             t = line.substr(start_idx,i-start_idx);
             if(pair->class_uri == ""){ //
                 pair->class_uri = t;

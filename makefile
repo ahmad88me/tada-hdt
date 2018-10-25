@@ -52,13 +52,7 @@ debug:
 	valgrind --tool=massif bin/tadanum --time-unit=B --stacks=yes
 
 test:
-	# This actually work, but we speed things up below
-	#$(CC) -c $(TSOURCES_ABS)
-	#mv *.o build/
-	#$(CC) -o $(TESTAPP) $(TOBJS_ABS) $(TLIBS)
-	#$(TESTAPP)
-	# Faster
-	$(CC) -c src/tests.cpp
+	$(CC) -c $(TSOURCES_ABS)
 	mv *.o build/
 	$(CC) -o $(TESTAPP) $(TOBJS_ABS) $(TLIBS)
 	$(TESTAPP)
@@ -77,6 +71,7 @@ cov:
 	$(CC) -o $(COVAPP) -fprofile-arcs -ftest-coverage $(TOBJS_ABS) $(TLIBS) 
 	$(COVAPP)
 	gcovr -r .
+	$(MAKE) cleancov
 
 cleancov:
 	-rm -Rf $(COVCLEANFILES)
