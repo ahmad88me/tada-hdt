@@ -1,4 +1,5 @@
 # TADA-HDT
+[![Build Status](https://semaphoreci.com/api/v1/ahmad88me/tada-hdt/branches/master/badge.svg)](https://semaphoreci.com/ahmad88me/tada-hdt)
 This application is intended for processing intermediate files from TADA-NumCol
 
 
