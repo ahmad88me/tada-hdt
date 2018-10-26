@@ -42,7 +42,7 @@ $(OBJS_ABS): $(SOURCES_ABS)
 	$(CC) $(CXXFLAGS) -c $(SOURCES_ABS)
 	mv *.o build/
 
-.PHONY: clean run debug test cov cleancov
+.PHONY: clean run debug test cov cleancov gcov
 
 debug: 
 	$(CC) $(CXXFLAGS) -g -c $(SOURCES_ABS)
@@ -71,7 +71,17 @@ cov:
 	$(CC) -o $(COVAPP) -fprofile-arcs -ftest-coverage $(TOBJS_ABS) $(TLIBS) 
 	$(COVAPP)
 	gcovr -r .
-	$(MAKE) cleancov
+	#$(MAKE) clean
+	# Only this line is needed for the coverage badge of codedev.io
+	lcov --directory . --capture --output-file coverage.info
+	$(MAKE) clean
+
+gcov:
+	$(CC) -c -fprofile-arcs -ftest-coverage $(TSOURCES_ABS)
+	mv *.o build/
+	$(CC) -o $(COVAPP) -fprofile-arcs -ftest-coverage $(TOBJS_ABS) $(TLIBS)
+	$(COVAPP)
+
 
 cleancov:
 	-rm -Rf $(COVCLEANFILES)
@@ -82,3 +92,4 @@ run:
 clean:
 	-rm $(BIN_DIR)/* 
 	-rm $(OBJ_DIR)/* 
+	$(MAKE) cleancov
