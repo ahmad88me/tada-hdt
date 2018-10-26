@@ -1,0 +1,9 @@
+massif*
+*.hdt
+*.hdt.*
+*.log
+*.tsv
+build/*
+bin/*
+.DS_Store
+.git
