@@ -9,6 +9,7 @@ namespace {
     string class_uri = "http://dbpedia.org/ontology/Person";
     string property_uri = "http://dbpedia.org/ontology/Person/height";
     EXPECT_EQ(1,1); // just to test the setup
+    EXPECT_EQ(1,2); // just to test the fail
     clspropair* pair1 =  get_clspropair_from_line(class_uri+"\t"+property_uri); 
     clspropair* pair2 =  get_clspropair_from_line(class_uri+"\t"+property_uri); 
     /*
