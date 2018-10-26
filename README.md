@@ -9,6 +9,9 @@ This application is intended for processing intermediate files from TADA-NumCol
 2. Computer the features for each class/numeric-property :fork_and_knife:
     - It will produce a file in the form of class property mean median std
 
+# Install
+(on ubuntu only) See `scripts/setup.sh` 
+
 # Build
 `make`
 
@@ -19,3 +22,13 @@ This application is intended for processing intermediate files from TADA-NumCol
 # Debug
 `make debug`
 It will generate massif output
+
+# Tests
+`make test`
+
+# Coverage
+`test cov`
+
+# Docker, automated tests and coverage
+(docker should be installed)
+`sh scripts/run_test_with_docker.sh`
