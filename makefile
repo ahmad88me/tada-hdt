@@ -42,7 +42,7 @@ $(OBJS_ABS): $(SOURCES_ABS)
 	$(CC) $(CXXFLAGS) -c $(SOURCES_ABS)
 	mv *.o build/
 
-.PHONY: clean run debug test cov cleancov gcov
+.PHONY: clean run debug test cov cleancov gcov codecov
 
 debug: 
 	$(CC) $(CXXFLAGS) -g -c $(SOURCES_ABS)
@@ -73,8 +73,15 @@ cov:
 	gcovr -r .
 	#$(MAKE) clean
 	# Only this line is needed for the coverage badge of codedev.io
+	#lcov --directory . --capture --output-file coverage.info
+	ls | grep "#usr" | xargs rm
+	#$(MAKE) clean
+
+codecov:
 	lcov --directory . --capture --output-file coverage.info
-	$(MAKE) clean
+	lcov --remove coverage.info '/usr/*' --output-file coverage.info
+	lcov --list coverage.info
+	bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
 
 gcov:
 	$(CC) -c -fprofile-arcs -ftest-coverage $(TSOURCES_ABS)

@@ -6,4 +6,4 @@ massif*
 build/*
 bin/*
 .DS_Store
-.git
+#.git

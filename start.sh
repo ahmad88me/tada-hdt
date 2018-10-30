@@ -1,0 +1,2 @@
+make cov
+make clean

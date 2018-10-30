@@ -1,6 +1,6 @@
 apt update
 apt install cmake g++ -y
-apt install zip wget -y
+apt install zip wget curl -y
 wget https://github.com/rdfhdt/hdt-cpp/archive/v1.3.2.zip
 unzip v1.3.2.zip
 rm v1.3.2.zip 

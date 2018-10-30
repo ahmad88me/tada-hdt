@@ -3,10 +3,7 @@ FROM ubuntu:latest
 RUN mkdir -p app
 WORKDIR /app
 
-# this is temp
-#COPY src src
-#COPY makefile makefile
 COPY scripts scripts
 
-#CMD ["sh", "scripts/setup.sh"]
+CMD ["sh", "scripts/setup.sh"]
 
