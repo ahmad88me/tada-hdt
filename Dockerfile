@@ -6,7 +6,7 @@ COPY makefile makefile
 COPY src src
 #For .git is required for the coverage
 COPY .git .git
-COPY start.sh start.sh
+COPY *.sh /app/
 
 RUN mkdir -p build
 RUN mkdir -p bin
