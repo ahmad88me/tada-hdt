@@ -37,6 +37,15 @@ namespace {
     delete pair1, pair2;
   }
 
+  TEST(FeaturesTest, Feats){
+      std::list<double> nums;
+      nums.push_front(10);
+      nums.push_front(100);
+      double mean_value = mean(&nums);
+      double median_value = median(&nums);
+      double std_value = stdev(&nums, mean_value);
+      //nums = [10,100]
+  }
 }// namespace
 
 int main(int argc, char **argv) {
