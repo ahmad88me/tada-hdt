@@ -1,2 +1,2 @@
 make cov
-make clean
+#make clean

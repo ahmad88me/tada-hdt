@@ -4,4 +4,4 @@ echo "[user]
     " > ~/.gitconfig
 make cov
 make codecov
-make clean
+#make clean
