@@ -12,15 +12,6 @@ namespace {
     //EXPECT_EQ(1,2); // just to test the fail
     clspropair* pair1 =  get_clspropair_from_line(class_uri+"\t"+property_uri); 
     clspropair* pair2 =  get_clspropair_from_line(class_uri+"\t"+property_uri); 
-    /*
-    cout << "testing overloaded equality\n";
-    if((*pair)==(*pair2)){
-        cout << "pairs are equal, this is correct\n";
-    }
-    else{
-        cout << "pairs are not equal, overloading is not successful\n";
-    }
-    */
     EXPECT_EQ(*pair1, *pair2);
     delete pair2, pair1;
     pair1 = get_clspropair_from_line(class_uri+"\t"+property_uri+"\t"+"123");
@@ -47,7 +38,9 @@ namespace {
       EXPECT_EQ(mean_value, 55);
       EXPECT_EQ(median_value, mean_value);
       EXPECT_EQ(std_value, 45);
-      //nums = [10,100]
+      nums.push_back(11);
+      median_value = median(&nums);
+      EXPECT_EQ(median_value, 11);
   }
 }// namespace
 

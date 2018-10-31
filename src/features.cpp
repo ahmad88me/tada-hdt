@@ -19,12 +19,6 @@ static string FEAT_FNAME = "features.tsv";
 
 using namespace std;
 
-/*
-typedef struct clspropairstruct{
-    string class_uri;
-    string property_uri;
-} clspropair;
-*/
 double stdev(std::list<double>* values, double mean_value){
     int i;
     double numerator_sum = 0;
@@ -47,6 +41,7 @@ double median(std::list<double>* values){
     bool even;
     int i=0;
     even = values->size()%2==0;
+    values->sort();
     if(even){
         for(auto it=values->cbegin();it!=values->cend();it++, i++){
             if(i==values->size()/2-1){
