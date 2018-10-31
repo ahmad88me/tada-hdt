@@ -6,7 +6,7 @@ TOBJS = $(NOMOBJS) tests.o
 NOMSOURCES = filter_num.cpp logger.cpp features.cpp # sources excluding main.cpp
 SOURCES = $(NOMSOURCES) main.cpp
 TSOURCES = $(NOMSOURCES) tests.cpp # test sources
-CXXFLAGS = -std=c++11 
+CXXFLAGS = -std=c++11  
 CC = g++
 OBJ_DIR = build
 SRC_DIR = src

@@ -3,9 +3,11 @@
 #include <stdlib.h>
 #include <iostream>
 #include <algorithm>
+#include <math.h>
 #include <cmath>
 #include <list>
 #include <set>
+#include <numeric>
 
 #include "features.h"
 #include "filter_num.h" 
@@ -33,29 +35,23 @@ double stdev(std::list<double>* values, double mean_value){
         numerator_sum+=  diff*diff;
     }
     std_value = numerator_sum/values->size();
+    std_value = sqrt(std_value);
     return std_value;
 }
 
 double mean(std::list<double>* values){
-    // temprorarly commented
-    //return std::accumulate(values->cbegin(), values->cend(), 0)/values->size();
-    return 0; // just for testing
+    return std::accumulate(values->cbegin(), values->cend(), 0)/values->size();
 }
 
 double median(std::list<double>* values){
     bool even;
     int i=0;
-    if(values->size()%2==0){
-        even=0;
-    }
-    else{
-        even=1;
-    }
+    even = values->size()%2==0;
     if(even){
         for(auto it=values->cbegin();it!=values->cend();it++, i++){
             if(i==values->size()/2-1){
                 //return (*it) + *(it+1);
-                return (*it) + *(++it);
+                return ((*it) + *(++it))/2;
             }
         }
     }
@@ -64,17 +60,10 @@ double median(std::list<double>* values){
             if(i==values->size()/2){
                 return (*it);
             }
-
         }
     }
     return 0;// just for testing
 }
-
-
-void test_enty_point(){
-    cout << "TESTING ..\n";
-}
-
 
 
 // This is the entry point

@@ -39,11 +39,14 @@ namespace {
 
   TEST(FeaturesTest, Feats){
       std::list<double> nums;
-      nums.push_front(10);
-      nums.push_front(100);
+      nums.push_back(10);
+      nums.push_back(100);
       double mean_value = mean(&nums);
       double median_value = median(&nums);
       double std_value = stdev(&nums, mean_value);
+      EXPECT_EQ(mean_value, 55);
+      EXPECT_EQ(median_value, mean_value);
+      EXPECT_EQ(std_value, 45);
       //nums = [10,100]
   }
 }// namespace
