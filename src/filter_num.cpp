@@ -139,8 +139,6 @@ bool isNumeric(HDT *hdt, std::list<string> *instances, string property_uri){
         delete it;
     }
     log(logfname, "nums: "+to_string(num_of_num)+"  literals: "+to_string(num_of_lit));
-    //delete triple;
-    //delete it; // Remember to delete iterator to avoid memory leaks!
     return num_of_num > num_of_lit;
 }
 

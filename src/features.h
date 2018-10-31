@@ -31,13 +31,16 @@ typedef struct clspropair{
     }
 } clspropair;
 
+std::list<clspropair*>* get_processed_feat_clspairs(string features_file_name);
+clspropair* get_clspropair_from_line(string line);
+void compute_store_features_for_pair(HDT* hdt, std::list<string>* instances, clspropair* pair);
+void write_features(string hdt_file_dir, string num_property_dir);
 clspropair* get_clspropair_from_line(string);
 double stdev(std::list<double>*, double); // standard deviation
 double median(std::list<double>*); // the value in the middle
 double mean(std::list<double>*); // avg
-void write_features(HDT*);
-void write_class_features(HDT* , string, string);
-//void write_class_prop_features(string, string);
+void compute_store_features_for_pair(clspropair*);
 void test_enty_point();
 std::list<clspropair*>* get_processed_feat_clspairs(string);
+string compute_features_line(HDT* hdt, string class_uri, string property_uri, std::list<string>* instances);
 #endif

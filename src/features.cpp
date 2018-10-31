@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -45,7 +44,6 @@ double median(std::list<double>* values){
     if(even){
         for(auto it=values->cbegin();it!=values->cend();it++, i++){
             if(i==values->size()/2-1){
-                //return (*it) + *(it+1);
                 return ((*it) + *(++it))/2;
             }
         }
@@ -62,27 +60,36 @@ double median(std::list<double>* values){
 
 
 // This is the entry point
-void write_features(string hdt_file_dir){
+void write_features(string hdt_file_dir, string num_property_dir){
     HDT *hdt = HDTManager::mapHDT(hdt_file_dir.c_str());       
-    ifstream in_file(NUM_PROP_FNAME);
-    std::set<string>* processed ;//= get_processed_classes();
+    ifstream in_file(num_property_dir);
+    std::list<clspropair*>* processed=get_processed_feat_clspairs(FEAT_FNAME);
+    std::list<string>* instances=NULL;
     bool found;
-    string line,class_uri;
+    string line,class_uri="";
+    clspropair* pair;
     int num_processed=processed->size();
     if(in_file.is_open()){
         while(getline(in_file, line)){
-            class_uri = get_class_from_line(line);
-            found = 0;
+            pair = get_clspropair_from_line(line);
+            found = false;
             for(auto it=processed->cbegin();it!=processed->cend();it++){
-                if((*it)==class_uri){
-                    found = 1;
+                if((*it)->class_uri == pair->class_uri && (*it)->property_uri == pair->property_uri){
+                    found = true;
                     break;
                 }
             }
             if(!found){
-                log(logfname, "processed classes: "+to_string(num_processed));
-                //write_class_features(class_uri); 
+                // if the instances are not for this class fetch them
+                if(class_uri != pair->class_uri){
+                    if(instances!=NULL){
+                        delete instances;
+                    }
+                    instances = get_instances(hdt, class_uri);
+                }
+                compute_store_features_for_pair(hdt, instances, pair); 
                 num_processed++;
+                log(logfname, "processed classes: "+to_string(num_processed));
             }
         }
     }
@@ -90,44 +97,17 @@ void write_features(string hdt_file_dir){
     delete hdt;
 }
 
-
-
-std::set<string>* get_processed_classes2(){
-    std::set<string>* classes_set=new std::set<string>;
+void compute_store_features_for_pair(HDT* hdt, std::list<string>* instances, clspropair* pair){
     string line;
-    string class_uri;
-    ifstream in_file(FEAT_FNAME);
-    if(in_file.is_open()){
-        while(getline(in_file, line)){
-            class_uri = get_class_from_line(line);
-            classes_set->insert(class_uri);
-        }
-        return classes_set;
-    }
-    else{
-        cout << "unable to open: "<< FEAT_FNAME <<endl;
-    }
-
-}
-
-
-
-void write_class_features(HDT* hdt, string class_uri, string line){
-    std::list<string>* instances = get_instances(hdt, class_uri);
-    std::list<string>* properties = get_properties_from_line(line);
-    string lines=""; // lines to write
-    for(auto it=properties->cbegin();it!=properties->cend();it++){
-        //lines += get_class_prop_features_line(hdt, class_uri, (*it), instances) + "\n";
-    }
+    line = compute_features_line(hdt, pair->class_uri, pair->property_uri, instances);
+    delete pair;
     ofstream outf;
     outf.open(FEAT_FNAME, ios::app);
-    outf << lines;
+    outf << line;
     outf.close();
-    delete properties;
-    delete instances;
 }
 
-string get_class_prop_features_line(HDT* hdt, string class_uri, string property_uri, std::list<string>* instances){
+string compute_features_line(HDT* hdt, string class_uri, string property_uri, std::list<string>* instances){
     string line;
     std::list<double> *values = new std::list<double>;
     IteratorTripleString *itt;
@@ -144,12 +124,12 @@ string get_class_prop_features_line(HDT* hdt, string class_uri, string property_
     }
     double mean_value;
     mean_value = mean(values);
-    line = class_uri + "\t" + property_uri + "\t" + to_string(mean_value) + "\t" + to_string(median(values)) + "\t" + to_string(stdev(values, mean_value));
+    line = class_uri + "\t" + property_uri +"\t"+ to_string(values->size())  + "\t" + to_string(mean_value) + "\t" + to_string(median(values)) + "\t" + to_string(stdev(values, mean_value));
     delete values;
-    return line;
+    return line+"\n";
 }
 
-clspropair*  get_clspropair_from_line(string line){
+clspropair* get_clspropair_from_line(string line){
     int i; 
     string t;
     clspropair * pair = new clspropair;
@@ -179,15 +159,11 @@ std::list<clspropair*>* get_processed_feat_clspairs(string features_file_name){
     if(in_file.is_open()){
         while(getline(in_file, line)){
             processed->push_back(get_clspropair_from_line(line));
-            //class_uri = get_class_from_line(line);
-            
-            //classes_set->push_back(class_uri);
         }   
-        //return classes_set;
         return processed;
     }   
     else{
-        cout << "unable to open: "<< FEAT_FNAME <<endl;
+        cout << "unable to open: "<< features_file_name <<endl;
         return 0;
     }  
 }
