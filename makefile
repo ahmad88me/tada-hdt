@@ -31,7 +31,7 @@ $(OBJS_ABS): $(SOURCES_ABS)
 	$(CC) $(CXXFLAGS) -c $(SOURCES_ABS)
 	mv *.o build/
 
-.PHONY: clean run debug test cov cleancov gcov codecov gcovr
+.PHONY: clean run debug test cov cleancov gcov codecov gcovr covnoclean
 
 debug: 
 	$(CC) $(CXXFLAGS) -g -c $(SOURCES_ABS)
@@ -45,7 +45,7 @@ test:
 	$(CC) -o $(TESTAPP) $(TOBJS_ABS) $(TLIBS)
 	$(TESTAPP)
 
-cov:
+covnoclean:
 	$(CC) -c -fprofile-arcs -ftest-coverage -fPIC  $(TSOURCES_ABS)
 	mv *.o build/
 	$(CC) -o $(COVAPP) -fprofile-arcs -ftest-coverage $(TOBJS_ABS) $(TLIBS) 
@@ -54,11 +54,20 @@ cov:
 	lcov --remove coverage.info '/usr/*' --output-file coverage.info
 	lcov --list coverage.info
 
+cov:
+	$(MAKE) covnoclean
+	$(MAKE) clean
+
 gcovr:
 	gcovr -r .
 
 codecov:
-	bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
+	$(MAKE) covnoclean
+	curl -s https://codecov.io/bash > codecovpush.sh
+	chmod +x codecovpush.sh
+	./codecovpush.sh
+	rm codecovpush.sh
+	$(MAKE) clean	
 
 gcov:
 	$(CC) -c -fprofile-arcs -ftest-coverage $(TSOURCES_ABS)
