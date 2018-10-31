@@ -39,5 +39,5 @@ void write_features(HDT*);
 void write_class_features(HDT* , string, string);
 //void write_class_prop_features(string, string);
 void test_enty_point();
-
+std::list<clspropair*>* get_processed_feat_clspairs(string);
 #endif

@@ -5,7 +5,7 @@
 
 namespace {
 
-  TEST(FeaturesTest, FeatFuncs) {
+  TEST(FeaturesTest, ClsProPairFromLine) {
     string class_uri = "http://dbpedia.org/ontology/Person";
     string property_uri = "http://dbpedia.org/ontology/Person/height";
     EXPECT_EQ(1,1); // just to test the setup
@@ -26,6 +26,40 @@ namespace {
     pair2 = get_clspropair_from_line(class_uri+"\t"+property_uri+"\t123");
     EXPECT_NE(*pair1,*pair2);
     delete pair1, pair2;
+  }
+  
+  TEST(FeaturesTest, ClsProPairProc){
+    string class_uri1 = "http://dbpedia.org/ontology/Person";  
+    string property_uri1_1 = "http://dbpedia.org/ontology/Person/height";
+    string property_uri1_2 = "http://dbpedia.org/ontology/Person/weight";
+    string class_uri2 = "http://dbpedia.org/ontology/test";  
+    string property_uri2_1 = "http://dbpedia.org/ontology/P1";
+    string property_uri2_2 = "http://dbpedia.org/ontology/p2";
+    string property_uri2_3 = "http://dbpedia.org/ontology/p3";
+    string content="";
+    content = 
+        "http://dbpedia.org/ontology/Person\thttp://dbpedia.org/ontology/Person/height\t1\t2\n"
+        "http://dbpedia.org/ontology/Person\thttp://dbpedia.org/ontology/Person/weight\t1\t2\n"
+        "http://dbpedia.org/ontology/test\thttp://dbpedia.org/ontology/Person/P1\t1\t2\n"
+        "http://dbpedia.org/ontology/test\thttp://dbpedia.org/property/p2\t1\t2\n"
+        "http://dbpedia.org/ontology/test\thttp://dbpedia.org/property/p1\t1\t2\n"
+    ; 
+    cout << "content: "<<endl<<content<<endl;
+    string feat_test_file = "automated_test_features.tsv.tmp";
+    ofstream out_file(feat_test_file);
+    out_file << content;
+    out_file.close();
+    std::list<clspropair*>* processed_pairs;
+    processed_pairs = get_processed_feat_clspairs(feat_test_file); 
+    EXPECT_EQ(processed_pairs->size(),5);
+    EXPECT_EQ(processed_pairs->front()->class_uri,"http://dbpedia.org/ontology/Person");
+    EXPECT_EQ(processed_pairs->front()->property_uri,"http://dbpedia.org/ontology/Person/height");
+    EXPECT_EQ(processed_pairs->back()->class_uri,"http://dbpedia.org/ontology/test");
+    EXPECT_EQ(processed_pairs->back()->property_uri,"http://dbpedia.org/property/p1");
+    EXPECT_NE(processed_pairs->back()->class_uri,"http://dbpedia.org/ontology/wrong");
+    EXPECT_NE(processed_pairs->back()->property_uri,"http://dbpedia.org/ontology/wrong");
+    delete processed_pairs;
+    remove(feat_test_file.c_str());
   }
 
   TEST(FeaturesTest, Feats){

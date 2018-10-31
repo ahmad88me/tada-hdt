@@ -65,8 +65,7 @@ double median(std::list<double>* values){
 void write_features(string hdt_file_dir){
     HDT *hdt = HDTManager::mapHDT(hdt_file_dir.c_str());       
     ifstream in_file(NUM_PROP_FNAME);
-    //commented temprorarly
-    std::set<string>* processed;// = get_processed_classes();
+    std::set<string>* processed ;//= get_processed_classes();
     bool found;
     string line,class_uri;
     int num_processed=processed->size();
@@ -82,7 +81,6 @@ void write_features(string hdt_file_dir){
             }
             if(!found){
                 log(logfname, "processed classes: "+to_string(num_processed));
-                //commented temp
                 //write_class_features(class_uri); 
                 num_processed++;
             }
@@ -91,6 +89,8 @@ void write_features(string hdt_file_dir){
     delete processed;
     delete hdt;
 }
+
+
 
 std::set<string>* get_processed_classes2(){
     std::set<string>* classes_set=new std::set<string>;
@@ -117,7 +117,6 @@ void write_class_features(HDT* hdt, string class_uri, string line){
     std::list<string>* properties = get_properties_from_line(line);
     string lines=""; // lines to write
     for(auto it=properties->cbegin();it!=properties->cend();it++){
-        //temproary comented this line
         //lines += get_class_prop_features_line(hdt, class_uri, (*it), instances) + "\n";
     }
     ofstream outf;
@@ -172,20 +171,24 @@ clspropair*  get_clspropair_from_line(string line){
     }
 }
 
-std::list<clspropair>* get_processed(){
+std::list<clspropair*>* get_processed_feat_clspairs(string features_file_name){
     string line;
     string class_uri;
-    ifstream in_file(FEAT_FNAME);
+    ifstream in_file(features_file_name);
+    std::list<clspropair*>* processed = new std::list<clspropair*>;
     if(in_file.is_open()){
         while(getline(in_file, line)){
-            class_uri = get_class_from_line(line);
-            //classes_set->insert(class_uri);
+            processed->push_back(get_clspropair_from_line(line));
+            //class_uri = get_class_from_line(line);
+            
+            //classes_set->push_back(class_uri);
         }   
         //return classes_set;
-        return NULL;
+        return processed;
     }   
     else{
         cout << "unable to open: "<< FEAT_FNAME <<endl;
+        return 0;
     }  
 }
 
