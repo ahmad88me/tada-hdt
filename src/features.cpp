@@ -27,12 +27,28 @@ double stdev(std::list<double>* values, double mean_value){
         diff = (*it) - mean_value;
         numerator_sum+=  diff*diff;
     }
+    
+    if(values->size()==0){
+        std_value = 0;
+    }
+    else{
+        std_value = numerator_sum/values->size();
+        std_value = sqrt(std_value);
+    }
+    
+    /*
     std_value = numerator_sum/values->size();
     std_value = sqrt(std_value);
+    */
     return std_value;
 }
 
 double mean(std::list<double>* values){
+    
+    if(values->size()==0){
+        return 0;
+    }
+    
     return std::accumulate(values->cbegin(), values->cend(), 0)/values->size();
 }
 
@@ -41,6 +57,11 @@ double median(std::list<double>* values){
     int i=0;
     even = values->size()%2==0;
     values->sort();
+    
+    if(values->size()==0){
+        return 0;
+    }
+    
     if(even){
         for(auto it=values->cbegin();it!=values->cend();it++, i++){
             if(i==values->size()/2-1){
@@ -70,11 +91,13 @@ void write_features(string hdt_file_dir, string num_property_dir){
     clspropair* pair;
     std::list<clspropair*>* pairs;
     int num_processed=processed->size();
+    log(logfname, "number of already processed pairs: "+to_string(num_processed));
     if(in_file.is_open()){
         log(logfname, "open file: "+num_property_dir);
         while(getline(in_file, line)){
             pairs = get_pairs_from_numfilter(line);
-            log(logfname, "("+to_string(pairs->size())+")"+" class: "+get_class_from_line(line));
+            class_uri = get_class_from_line(line);
+            log(logfname, "("+to_string(pairs->size())+")"+" class: "+class_uri);
             for(auto it_p=pairs->cbegin();it_p!=pairs->cend();it_p++){
                 pair = (*it_p);
                 found = false;
@@ -86,12 +109,15 @@ void write_features(string hdt_file_dir, string num_property_dir){
                 }
                 if(!found){
                     // if the instances are not for this class fetch them
-                    if(class_uri != pair->class_uri){
+                    if(class_uri != pair->class_uri || instances==NULL){
                         if(instances!=NULL){
                             delete instances;
                         }
+                        log(logfname,"fetching instances for "+class_uri);
                         instances = get_instances(hdt, class_uri);
+                        log(logfname,"num of instances: "+to_string(instances->size()));
                     }
+                    log(logfname,"computing features for: "+pair->class_uri+" - "+pair->property_uri);
                     compute_store_features_for_pair(hdt, instances, pair); 
                     num_processed++;
                     log(logfname, "processed class/property pairs: "+to_string(num_processed));
@@ -110,6 +136,7 @@ void compute_store_features_for_pair(HDT* hdt, std::list<string>* instances, cls
     string line;
     line = compute_features_line(hdt, pair->class_uri, pair->property_uri, instances);
     delete pair;
+    //log(logfname, "writing the results");
     ofstream outf;
     outf.open(FEAT_FNAME, ios::app);
     outf << line;
@@ -122,14 +149,20 @@ string compute_features_line(HDT* hdt, string class_uri, string property_uri, st
     IteratorTripleString *itt;
     TripleString * triple;
     double v;
+    //log(logfname, "close look to the loop");
+    log(logfname, "num of instances: "+to_string(instances->size()));
+
     for(auto it=instances->cbegin();it!=instances->cend();it++){
+        //log(logfname, "internal hdt search");
         itt = hdt->search((*it).c_str(), property_uri.c_str(), "");
+        //log(logfname, "has next? "+to_string(itt->hasNext()));
         if(itt->hasNext()){
             triple = itt->next();
             if(str_to_double(triple->getObject(),v)){
                 values->push_front(v);
             }
         }
+        delete itt;
     }
     double mean_value;
     mean_value = mean(values);
