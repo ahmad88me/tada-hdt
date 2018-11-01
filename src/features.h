@@ -43,4 +43,5 @@ void compute_store_features_for_pair(clspropair*);
 void test_enty_point();
 std::list<clspropair*>* get_processed_feat_clspairs(string);
 string compute_features_line(HDT* hdt, string class_uri, string property_uri, std::list<string>* instances);
+std::list<clspropair*>* get_pairs_from_numfilter(string line);
 #endif

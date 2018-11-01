@@ -68,30 +68,39 @@ void write_features(string hdt_file_dir, string num_property_dir){
     bool found;
     string line,class_uri="";
     clspropair* pair;
+    std::list<clspropair*>* pairs;
     int num_processed=processed->size();
     if(in_file.is_open()){
+        log(logfname, "open file: "+num_property_dir);
         while(getline(in_file, line)){
-            pair = get_clspropair_from_line(line);
-            found = false;
-            for(auto it=processed->cbegin();it!=processed->cend();it++){
-                if((*it)->class_uri == pair->class_uri && (*it)->property_uri == pair->property_uri){
-                    found = true;
-                    break;
-                }
-            }
-            if(!found){
-                // if the instances are not for this class fetch them
-                if(class_uri != pair->class_uri){
-                    if(instances!=NULL){
-                        delete instances;
+            pairs = get_pairs_from_numfilter(line);
+            log(logfname, "("+to_string(pairs->size())+")"+" class: "+get_class_from_line(line));
+            for(auto it_p=pairs->cbegin();it_p!=pairs->cend();it_p++){
+                pair = (*it_p);
+                found = false;
+                for(auto it=processed->cbegin();it!=processed->cend();it++){
+                    if((*it)->class_uri == pair->class_uri && (*it)->property_uri == pair->property_uri){
+                        found = true;
+                        break;
                     }
-                    instances = get_instances(hdt, class_uri);
                 }
-                compute_store_features_for_pair(hdt, instances, pair); 
-                num_processed++;
-                log(logfname, "processed classes: "+to_string(num_processed));
-            }
-        }
+                if(!found){
+                    // if the instances are not for this class fetch them
+                    if(class_uri != pair->class_uri){
+                        if(instances!=NULL){
+                            delete instances;
+                        }
+                        instances = get_instances(hdt, class_uri);
+                    }
+                    compute_store_features_for_pair(hdt, instances, pair); 
+                    num_processed++;
+                    log(logfname, "processed class/property pairs: "+to_string(num_processed));
+                }// if not found
+            }// loop for fetch pairs
+        }//while
+    }
+    else{
+        log(logfname, "ERROR unable to open file: "+num_property_dir);
     }
     delete processed;
     delete hdt;
@@ -163,8 +172,40 @@ std::list<clspropair*>* get_processed_feat_clspairs(string features_file_name){
         return processed;
     }   
     else{
-        cout << "unable to open: "<< features_file_name <<endl;
-        return 0;
+        cout << "file not open: "<< features_file_name <<endl;
+        return processed;
     }  
 }
 
+std::list<clspropair*>* get_pairs_from_numfilter(string line){
+    // The line here is has the form
+    // class property1 property2 ....
+    std::list<clspropair*>* pairs = new std::list<clspropair*>;
+    clspropair* pair;
+    int i;
+    string class_uri,t;
+    int start_idx=0;
+    for(i=0;i<line.length();i++){
+        if(line[i]=='\t' || line[i]=='\n' || i==line.length()-1){
+            // capture the whole string for the class or property
+            if(i==line.length()-1 && line[i]!='\n' && line[i]!='\t'){
+                t = line.substr(start_idx,i-start_idx+1);
+            }
+            else{
+                t = line.substr(start_idx,i-start_idx);
+            }
+            //check if class
+            if(start_idx==0){
+                class_uri = t;
+            }
+            else{
+                pair = new clspropair;
+                pair->class_uri = class_uri;
+                pair->property_uri = t;
+                pairs->push_back(pair);
+            }
+            start_idx = i+1;
+        }
+    }
+    return pairs;
+}
