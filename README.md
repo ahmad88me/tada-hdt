@@ -14,8 +14,9 @@ This application is intended for processing intermediate files from TADA-NumCol
 # Output Files Formats
 * `class_property_num.tsv`
 
-    |CLASS_URI1 | PROP1 | PROP2 | ...|
-    |CLASS_URI2 | PROP3 | PROP4 | ...|
+    | CLASS_URI1 | PROP1 | PROP2 | ... |
+    | :--------: | :---: | :---: | :-: |
+    | CLASS_URI2 | PROP3 | PROP4 | ... |
 
 * `features.tsv`
 
