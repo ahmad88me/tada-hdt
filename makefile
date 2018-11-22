@@ -83,6 +83,6 @@ run:
 	bin/tadanum
 
 clean:
-	-rm $(BIN_DIR)/* 
-	-rm $(OBJ_DIR)/* 
+	$(RM) -R $(BIN_DIR)/* 
+	$(RM) -R $(OBJ_DIR)/* 
 	$(MAKE) cleancov
