@@ -2,8 +2,17 @@
 #include <string>
 #include <gtest/gtest.h>
 #include "features.h"
+#include "filter_num.h"
 
 namespace {
+
+    TEST(FeaturesTest, Teststrtodouble){
+	string s = "\"204.0\"^^<http://dbpedia.org/datatype/centimetre>";
+	double v;
+	EXPECT_TRUE(str_to_double(s,v));
+	EXPECT_EQ(v, 204.0);
+	//cout<< "value: "<<v<<endl;
+    }
 
     TEST(FeaturesTest, ClsProPairFromLine) {
         string class_uri = "http://dbpedia.org/ontology/Person";
@@ -44,7 +53,7 @@ namespace {
             "http://dbpedia.org/ontology/test\thttp://dbpedia.org/property/p2\t1\t2\n"
             "http://dbpedia.org/ontology/test\thttp://dbpedia.org/property/p1\t1\t2\n"
             ; 
-        cout << "content: "<<endl<<content<<endl;
+        //cout << "content: "<<endl<<content<<endl;
         string feat_test_file = "automated_test_features.tsv.tmp";
         ofstream out_file(feat_test_file);
         out_file << content;
