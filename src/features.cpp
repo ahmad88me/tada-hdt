@@ -15,8 +15,11 @@
 static string logfname = "features.log";
 static string NUM_PROP_FNAME = "class_property_num.tsv";
 static string FEAT_FNAME = "features.tsv";
+//static string FEAT_FNAME = "features-min-height-BasketballPlayer.tsv";
+
 
 using namespace std;
+
 
 double stdev(std::list<double>* values, double mean_value){
     int i;
@@ -85,8 +88,8 @@ void write_features(string hdt_file_dir, string num_property_dir){
     HDT *hdt = HDTManager::mapHDT(hdt_file_dir.c_str());       
     ifstream in_file(num_property_dir);
     std::list<clspropair*>* processed=get_processed_feat_clspairs(FEAT_FNAME);
-    std::list<string>* instances=NULL;
-    bool found;
+    std::list<string>* instances=nullptr;
+    bool found, instances_fetched;
     string line,class_uri="";
     clspropair* pair;
     std::list<clspropair*>* pairs;
@@ -97,6 +100,7 @@ void write_features(string hdt_file_dir, string num_property_dir){
         while(getline(in_file, line)){
             pairs = get_pairs_from_numfilter(line);
             class_uri = get_class_from_line(line);
+            instances_fetched = false;
             log(logfname, "("+to_string(pairs->size())+")"+" class: "+class_uri);
             for(auto it_p=pairs->cbegin();it_p!=pairs->cend();it_p++){
                 pair = (*it_p);
@@ -109,12 +113,13 @@ void write_features(string hdt_file_dir, string num_property_dir){
                 }
                 if(!found){
                     // if the instances are not for this class fetch them
-                    if(class_uri != pair->class_uri || instances==NULL){
-                        if(instances!=NULL){
+                    if(instances_fetched==false){
+                        if(instances!=nullptr){
                             delete instances;
                         }
                         log(logfname,"fetching instances for "+class_uri);
                         instances = get_instances(hdt, class_uri);
+                        instances_fetched = true;
                         log(logfname,"num of instances: "+to_string(instances->size()));
                     }
                     log(logfname,"computing features for: "+pair->class_uri+" - "+pair->property_uri);
