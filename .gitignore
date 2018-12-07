@@ -1,3 +1,8 @@
+
+# optimization test output
+class_property_num-opti*
+features-opti*
+
 # Qt Creator
 TADA-HDT.qbs*
 
@@ -7,6 +12,8 @@ TADA-HDT.qbs*
 # temp files
 *.tmp
 *.swp
+sample.ttl
+
 
 # massif output
 massif.*
