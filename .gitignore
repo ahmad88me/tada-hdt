@@ -12,6 +12,8 @@ TADA-HDT.qbs*
 # temp files
 *.tmp
 *.swp
+test-classes.tsv
+sample_golf.ttl
 sample.ttl
 
 

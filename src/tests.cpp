@@ -3,6 +3,8 @@
 #include <string>
 #include <gtest/gtest.h>
 #include <HDTEnums.hpp>
+#include <fstream>
+
 #include "features.h"
 #include "common.h"
 #include "filter_num.h"
@@ -135,12 +137,16 @@ namespace {
         string hdt_index = hdt_file+".index.v1-1";
         string class_property_file = "sample_golf_class_property_all.tsv";
         string property_num_file = "sample_golf_property_num.tsv";
+        string classes_file = "test-classes.tsv";
         // to remove the sample hdt file if it exists
         if(access( hdt_file.c_str(), F_OK ) != -1){
             remove(hdt_file.c_str());
         }
         if(access(hdt_index.c_str(), F_OK ) != -1){
             remove(hdt_index.c_str());
+        }
+        if(access(classes_file.c_str(), F_OK ) != -1){
+            remove(classes_file.c_str());
         }
         ttl_to_hdt(input_file);
         Filternum fn(hdt_file, "test-filter.log");
@@ -150,8 +156,12 @@ namespace {
         fn.m_min_num_of_res = 1;
         leaves = fn.get_leaf_classes();
         EXPECT_EQ(leaves->size(), 1);
-
-        //fn.automic_write_classes("test-classes.tsv");
+        fn.automic_write_classes("test-classes.tsv");
+        ifstream input_classes(classes_file);
+        string s;
+        input_classes >> s;
+        EXPECT_EQ(s, "http://dbpedia.org/ontology/GolfPlayer");
+        cout << "the content of the file is: " << s<<endl;
         //write_classes("","");
         //write_classes(hdt_file,class_property_file);
         //store_num_cols(hdt_file, class_property_file);

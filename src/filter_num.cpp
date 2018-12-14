@@ -170,32 +170,14 @@ void Filternum::automic_write_classes(string out_file_dir){
         log(logfname, "The classes already extracted to: "+out_file_dir);
         return;
     }
-    //std::list<string> *leaves = get_leaf_classes();
-
-
-   //log(logfname, "Number of leaves: "+to_string(leaves->size()));
-
-//    HDT *hdt = HDTManager::mapIndexedHDT(hdt_file_dir.c_str());
-//    std::list<string> * classes = get_leaf_classes(hdt_file_dir);
-//    ofstream f;
-//    f.open(out_file_dir, ios::app);
-
-//    f<< class_uri;
-//    for(auto it=properties->cbegin();it != properties->cend();it++){
-//        property_uri = *it;
-//        f << "\t" << property_uri;
-//    }
-//    f << endl;
-//    f.close();
-
-//    for(auto it=classes.cbegin();it!=classes.end();it++){
-//        found = false;
-//        for(auto it2=processed->cbegin();it2!=processed->cend();it2++){
-
-//        }
-//    }
-//    delete processed;
-
+    std::list<string> *leaves = get_leaf_classes();
+    ofstream f;
+    f.open(out_file_dir, ios::out);
+    for(auto it=leaves->cbegin();it != leaves->cend();it++){
+        f << *it <<endl;
+    }
+    f.close();
+    delete leaves;
 }
 
 
