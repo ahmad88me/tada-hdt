@@ -162,7 +162,6 @@ namespace {
         input_classes >> s;
         EXPECT_EQ(s, "http://dbpedia.org/ontology/GolfPlayer");
         cout << "the content of the file is: " << s<<endl;
-        //write_classes("","");
         //write_classes(hdt_file,class_property_file);
         //store_num_cols(hdt_file, class_property_file);
         //write_features(hdt_file, property_num_file);

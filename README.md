@@ -22,7 +22,9 @@ This application is intended for processing intermediate files from TADA-NumCol
 
     | CLASS_URI | PROPERTY_URI | #NUMERIC_VALS | MEAN | MEDIAN | STD |
     | :-------: | :----------: | :-----------: | :--: | :----: | :-: | 
-    
+
+# Workflow
+![alt text](workflow.svg)   
 
 # Install
 (on ubuntu only) See `scripts/setup.sh` 
