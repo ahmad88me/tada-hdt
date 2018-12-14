@@ -143,8 +143,15 @@ namespace {
             remove(hdt_index.c_str());
         }
         ttl_to_hdt(input_file);
-        //std::list<string> *leaves = get_leaf_classes(hdt_file);
-        //EXPECT_EQ(leaves->size(), 1);
+        Filternum fn(hdt_file, "test-filter.log");
+        std::list<string> *leaves;
+        leaves = fn.get_leaf_classes();
+        EXPECT_EQ(leaves->size(), 0);
+        fn.m_min_num_of_res = 1;
+        leaves = fn.get_leaf_classes();
+        EXPECT_EQ(leaves->size(), 1);
+
+        //fn.automic_write_classes("test-classes.tsv");
         //write_classes("","");
         //write_classes(hdt_file,class_property_file);
         //store_num_cols(hdt_file, class_property_file);

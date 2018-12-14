@@ -12,6 +12,7 @@
 #include <string>
 #include <algorithm>
 #include <list>
+#include <easy_logger/easy_logger.h>
 #include <unistd.h>
 
 #include "filter_num.h"
@@ -19,7 +20,6 @@
 #include "common.h"
 
 
-static int min_num_of_res = 20;
 
 
 string numfile = "test-class_property_num.tsv";
@@ -28,8 +28,9 @@ string logfname = "test-filter_num.log";
 //string logfname = "filter_num.log";
 //static string rdf_type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 
-Filternum::Filternum(string hdt_file){
-
+Filternum::Filternum(string hdt_file_dir, string log_file_dir){
+   hdt = HDTManager::mapIndexedHDT(hdt_file_dir.c_str());
+   m_logger = new EasyLogger(log_file_dir);
 }
 
 
@@ -85,50 +86,94 @@ std::list<string>* Filternum::get_processed_classes(){
 //}
 
 
-std::list<string> * Filternum::get_leaf_classes(string hdt_file_dir){
-    HDT *hdt = HDTManager::mapIndexedHDT(hdt_file_dir.c_str());
+//std::list<string> * Filternum::get_leaf_classes(){
+//    IteratorTripleString *itt;
+//    TripleString * triple;
+//    set<string> classes;
+//    std::list<string> *unique_classes = new std::list<string>;
+//    itt = hdt->search("", rdf_type.c_str(), "");
+//    long l=0;
+//    while(itt->hasNext()){
+//        //log(logfname, "counter: "+to_string(l)+"\tstored: "+to_string(classes.size()));
+//        triple = itt->next();
+//        classes.insert(triple->getObject());
+//        //log(logfname, "type: "+triple->getObject());
+//    }
+//    delete itt;
+//    // delete classes that has subclasses, we only want the leaves
+//    for(auto it=classes.cbegin();it!=classes.end();it++){
+//        itt = hdt->search("", rdfs_subclassof.c_str(), (*it).c_str());
+//        if(itt->hasNext()){
+//            //log(logfname, "discard: "+*it);
+//        }
+//        else{
+//            unique_classes->push_back(*it);
+//            //log(logfname, "include: "+*it);
+//        }
+//        delete itt;
+//    }
+//    m_logger->log("num of unique classes: "+to_string(unique_classes->size()));
+////    log(logfname, "num of unique classes: "+to_string(unique_classes->size()));
+//    m_logger->log("num of leaves: "+to_string(unique_classes->size()));
+////    log(logfname, "num of leaves: "+to_string(unique_classes->size()));
+//    for(auto it=unique_classes->cbegin();it!=unique_classes->end();it++){
+////        log(logfname, "class: "+*it);
+//        m_logger->log("class: "+*it);
+//    }
+//    return unique_classes;
+//}
+
+
+std::list<string> * Filternum::get_leaf_classes(){
     IteratorTripleString *itt;
     TripleString * triple;
     set<string> classes;
+    std::map<string, unsigned>* classes_counts = new std::map<string, unsigned>;
     std::list<string> *unique_classes = new std::list<string>;
     itt = hdt->search("", rdf_type.c_str(), "");
-    long l=0;
+    m_logger->log("getting the leaves");
     while(itt->hasNext()){
-        //log(logfname, "counter: "+to_string(l)+"\tstored: "+to_string(classes.size()));
         triple = itt->next();
-        classes.insert(triple->getObject());
-        //log(logfname, "type: "+triple->getObject());
-    }
-    delete itt;
-    // delete classes that has subclasses, we only want the leaves
-    for(auto it=classes.cbegin();it!=classes.end();it++){
-        itt = hdt->search("", rdfs_subclassof.c_str(), (*it).c_str());
-        if(itt->hasNext()){
-            //log(logfname, "discard: "+*it);
+        if(classes_counts->find(triple->getObject())==classes_counts->end()){
+            (*classes_counts)[triple->getObject()] = 1;
         }
         else{
-            unique_classes->push_back(*it);
-            //log(logfname, "include: "+*it);
+            (*classes_counts)[triple->getObject()]++;
+        }
+    }
+    delete itt;
+    m_logger->log("this->m_min_num_of_res: "+to_string(this->m_min_num_of_res));
+    // delete classes that has subclasses, we only want the leaves
+    for(auto it=classes_counts->cbegin();it!=classes_counts->cend();it++){
+        m_logger->log(it->first+" - "+to_string(it->second));
+        itt = hdt->search("", rdfs_subclassof.c_str(), it->first.c_str());
+        if(!itt->hasNext() && it->second >= this->m_min_num_of_res){
+            m_logger->log("picked class: "+it->first+" "+to_string(it->second));
+            unique_classes->push_back(it->first);
+        }
+        if(!(itt->hasNext())){
+            m_logger->log("no next: "+it->first);
+        }
+        if(it->second >= this->m_min_num_of_res){
+            m_logger->log("more that min: "+it->first);
         }
         delete itt;
     }
-    log(logfname, "num of unique classes: "+to_string(unique_classes->size()));
-    log(logfname, "num of leaves: "+to_string(unique_classes->size()));
-    for(auto it=unique_classes->cbegin();it!=unique_classes->end();it++){
-        log(logfname, "class: "+*it);
-    }
+    m_logger->log("num of leaves: "+to_string(unique_classes->size()));
     return unique_classes;
 }
 
 
-void Filternum::automic_write_classes(string hdt_file_dir, string out_file_dir){
+void Filternum::automic_write_classes(string out_file_dir){
     // if the file exists, then no need to proceed, because the data is already extracted
     if(access( out_file_dir.c_str(), F_OK ) != -1){
         log(logfname, "The classes already extracted to: "+out_file_dir);
         return;
     }
-   std::list<string> *leaves = get_leaf_classes("dbpedia_all.hdt");
-   log(logfname, "Number of leaves: "+to_string(leaves->size()));
+    //std::list<string> *leaves = get_leaf_classes();
+
+
+   //log(logfname, "Number of leaves: "+to_string(leaves->size()));
 
 //    HDT *hdt = HDTManager::mapIndexedHDT(hdt_file_dir.c_str());
 //    std::list<string> * classes = get_leaf_classes(hdt_file_dir);

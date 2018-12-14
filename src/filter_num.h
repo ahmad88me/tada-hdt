@@ -3,26 +3,19 @@
 #define FILTER_NUM_H
 #include <HDTManager.hpp>
 #include <list>
-//#include <HDT.hpp>
+#include <easy_logger/easy_logger.h>
 
 using namespace hdt;
-
-typedef struct str_count{
-    string str;
-    string count;
-    friend inline bool operator==(const struct str_count& l, const struct str_count& r){
-        return l.str == r.str;
-    }
-    friend inline bool operator!=(const struct str_count& l, const struct str_count&r){
-    return !(l==r);
-    }
-} str_count;
 
 
 class Filternum{
 public:
-    Filternum(string);
-//    bool str_to_double(string , double & );
+    Filternum(string, string);
+    std::list<string> *get_leaf_classes();
+    void automic_write_classes(string out_file_dir);
+
+
+    //    bool str_to_double(string , double & );
     bool isNumeric(HDT*, std::list<string>*, string);
     void store_single_class(HDT* hdt, string line);
     void write_single_class(string class_uri, std::list<string>* properties);
@@ -31,7 +24,12 @@ public:
     std::list<string>* get_properties_from_line(string line);
     std::list<string> *get_instances(HDT* hdt, string class_uri);
     std::list<string> *get_processed_classes();
-    std::list<string> *get_leaf_classes(string);
-    void automic_write_classes(string hdt_file_dir, string out_file_dir);
+
+    unsigned m_min_num_of_res = 20;
+
+
+private:
+    HDT* hdt;
+    EasyLogger* m_logger;
 };
 #endif
