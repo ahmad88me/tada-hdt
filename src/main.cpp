@@ -20,8 +20,13 @@ using namespace hdt;
 //    cout << "line: "<<line<<endl;
 //}
 
+//extern string logfname;
+//extern string FEAT_FNAME;
+
 // Commit this to focus on the optimization
 int main(){
+//    logfname = "main-features.log";
+//    FEAT_FNAME = "main-features.tsv";
     string HDT_FNAME = "dbpedia_all.hdt";
     string CLASS_PROP_FNAME = "class_property_all.tsv";
     string NUM_PROP_FNAME = "class_property_num.tsv";

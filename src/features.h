@@ -4,6 +4,8 @@
 #include <list>
 using namespace hdt;
 
+//const string rdf_type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+
 
 typedef struct clspropair{
     string class_uri;

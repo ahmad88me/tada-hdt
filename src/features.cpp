@@ -9,17 +9,17 @@
 #include <numeric>
 
 #include "features.h"
-#include "filter_num.h" 
+//#include "filter_num.h"
 #include "logger.h"
+#include "common.h"
 
-//static string logfname = "features-opti-static.log";
-static string logfname = "features-opti-swap.log";
-//static string FEAT_FNAME = "features.tsv";
-//static string FEAT_FNAME = "features-min-height-BasketballPlayer.tsv";
-static string FEAT_FNAME = "features-opti-swap.tsv";
-//static string FEAT_FNAME = "features-opti-static.tsv";
-static bool SUBSET = false;
-static string rdf_type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+static string logfname = "tests-features.log";
+static string FEAT_FNAME = "tests-features.tsv";
+////static string FEAT_FNAME = "features-min-height-BasketballPlayer.tsv";
+//static string rdf_type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+
+
+
 
 using namespace std;
 
@@ -261,18 +261,7 @@ string compute_features_line(HDT* hdt, string class_uri, string property_uri, st
             delete itt;
         }
     }
-//    for(auto it=instances->cbegin();it!=instances->cend();it++){
-//        //log(logfname, "internal hdt search");
-//        itt = hdt->search((*it).c_str(), property_uri.c_str(), "");
-//        //log(logfname, "has next? "+to_string(itt->hasNext()));
-//        if(itt->hasNext()){
-//            triple = itt->next();
-//            if(str_to_double(triple->getObject(),v)){
-//                values->push_front(v);
-//            }
-//        }
-//        delete itt;
-//    }
+
     double mean_value;
     mean_value = mean(values);
     line = class_uri + "\t" + property_uri +"\t"+ to_string(values->size())  + "\t" + to_string(mean_value) + "\t" + to_string(median(values)) + "\t" + to_string(stdev(values, mean_value));
@@ -323,8 +312,9 @@ std::list<clspropair*>* get_processed_feat_clspairs(string features_file_name){
 }
 
 std::list<clspropair*>* get_pairs_from_numfilter(string line){
-    // The line here is has the form
-    // class property1 property2 ....
+    /* The line here is has the form
+        class property1 property2 ....
+    */
     std::list<clspropair*>* pairs = new std::list<clspropair*>;
     clspropair* pair;
     int i;

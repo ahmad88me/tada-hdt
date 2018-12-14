@@ -1,9 +1,9 @@
-HEADERS = filter_num.h logger.h features.h
+HEADERS = common.h filter_num.h logger.h features.h
 #headers = 
-NOMOBJS =  filter_num.o logger.o features.o # no email objects
+NOMOBJS =  filter_num.o logger.o features.o common.o # no email objects
 OBJS =  $(NOMOBJS) main.o 
 TOBJS = $(NOMOBJS) tests.o
-NOMSOURCES = filter_num.cpp logger.cpp features.cpp # sources excluding main.cpp
+NOMSOURCES = filter_num.cpp logger.cpp features.cpp common.cpp # sources excluding main.cpp
 SOURCES = $(NOMSOURCES) main.cpp
 TSOURCES = $(NOMSOURCES) tests.cpp # test sources
 CXXFLAGS = -std=c++11  

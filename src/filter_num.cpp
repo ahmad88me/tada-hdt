@@ -5,7 +5,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <HDTManager.hpp>
 #include <cmath>
 #include <iostream>
@@ -13,14 +12,28 @@
 #include <string>
 #include <algorithm>
 #include <list>
+#include <unistd.h>
 
 #include "filter_num.h"
 #include "logger.h"
+#include "common.h"
 
-string numfile = "class_property_num.tsv";
-string logfname = "filter_num.log";
 
-std::list<string>* get_processed_classes(){
+static int min_num_of_res = 20;
+
+
+string numfile = "test-class_property_num.tsv";
+string logfname = "test-filter_num.log";
+//string numfile = "class_property_num.tsv";
+//string logfname = "filter_num.log";
+//static string rdf_type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+
+Filternum::Filternum(string hdt_file){
+
+}
+
+
+std::list<string>* Filternum::get_processed_classes(){
     string line;
     std::list<string> *classes = new std::list<string>;
     ifstream in_file(numfile);
@@ -35,7 +48,113 @@ std::list<string>* get_processed_classes(){
     return classes;
 }
 
-void store_num_cols(string hdt_file_dir, string in_file_dir){
+
+//std::list<string> *get_leaf_classes(string hdt_file_dir){
+//    HDT *hdt = HDTManager::mapIndexedHDT(hdt_file_dir.c_str());
+//    IteratorTripleString *itt;
+//    TripleString * triple;
+//    set<string> classes;
+//    std::list<string> *unique_classes = new std::list<string>;
+//    itt = hdt->search("", rdf_type.c_str(), "");
+//    long l=0;
+//    while(itt->hasNext()){
+//        //log(logfname, "counter: "+to_string(l)+"\tstored: "+to_string(classes.size()));
+//        triple = itt->next();
+//        classes.insert(triple->getObject());
+//        //log(logfname, "type: "+triple->getObject());
+//    }
+//    delete itt;
+//    // delete classes that has subclasses, we only want the leaves
+//    for(auto it=classes.cbegin();it!=classes.end();it++){
+//        itt = hdt->search("", rdfs_subclassof.c_str(), (*it).c_str());
+//        if(itt->hasNext()){
+//            //log(logfname, "discard: "+*it);
+//        }
+//        else{
+//            unique_classes->push_back(*it);
+//            //log(logfname, "include: "+*it);
+//        }
+//        delete itt;
+//    }
+//    log(logfname, "num of unique classes: "+to_string(unique_classes->size()));
+//    log(logfname, "num of leaves: "+to_string(unique_classes->size()));
+//    for(auto it=unique_classes->cbegin();it!=unique_classes->end();it++){
+//        log(logfname, "class: "+*it);
+//    }
+//    return unique_classes;
+//}
+
+
+std::list<string> * Filternum::get_leaf_classes(string hdt_file_dir){
+    HDT *hdt = HDTManager::mapIndexedHDT(hdt_file_dir.c_str());
+    IteratorTripleString *itt;
+    TripleString * triple;
+    set<string> classes;
+    std::list<string> *unique_classes = new std::list<string>;
+    itt = hdt->search("", rdf_type.c_str(), "");
+    long l=0;
+    while(itt->hasNext()){
+        //log(logfname, "counter: "+to_string(l)+"\tstored: "+to_string(classes.size()));
+        triple = itt->next();
+        classes.insert(triple->getObject());
+        //log(logfname, "type: "+triple->getObject());
+    }
+    delete itt;
+    // delete classes that has subclasses, we only want the leaves
+    for(auto it=classes.cbegin();it!=classes.end();it++){
+        itt = hdt->search("", rdfs_subclassof.c_str(), (*it).c_str());
+        if(itt->hasNext()){
+            //log(logfname, "discard: "+*it);
+        }
+        else{
+            unique_classes->push_back(*it);
+            //log(logfname, "include: "+*it);
+        }
+        delete itt;
+    }
+    log(logfname, "num of unique classes: "+to_string(unique_classes->size()));
+    log(logfname, "num of leaves: "+to_string(unique_classes->size()));
+    for(auto it=unique_classes->cbegin();it!=unique_classes->end();it++){
+        log(logfname, "class: "+*it);
+    }
+    return unique_classes;
+}
+
+
+void Filternum::automic_write_classes(string hdt_file_dir, string out_file_dir){
+    // if the file exists, then no need to proceed, because the data is already extracted
+    if(access( out_file_dir.c_str(), F_OK ) != -1){
+        log(logfname, "The classes already extracted to: "+out_file_dir);
+        return;
+    }
+   std::list<string> *leaves = get_leaf_classes("dbpedia_all.hdt");
+   log(logfname, "Number of leaves: "+to_string(leaves->size()));
+
+//    HDT *hdt = HDTManager::mapIndexedHDT(hdt_file_dir.c_str());
+//    std::list<string> * classes = get_leaf_classes(hdt_file_dir);
+//    ofstream f;
+//    f.open(out_file_dir, ios::app);
+
+//    f<< class_uri;
+//    for(auto it=properties->cbegin();it != properties->cend();it++){
+//        property_uri = *it;
+//        f << "\t" << property_uri;
+//    }
+//    f << endl;
+//    f.close();
+
+//    for(auto it=classes.cbegin();it!=classes.end();it++){
+//        found = false;
+//        for(auto it2=processed->cbegin();it2!=processed->cend();it2++){
+
+//        }
+//    }
+//    delete processed;
+
+}
+
+
+void Filternum::store_num_cols(string hdt_file_dir, string in_file_dir){
     HDT *hdt = HDTManager::mapHDT(hdt_file_dir.c_str());
     //HDT *hdt = HDTManager::mapHDT("/Users/aalobaid/workspaces/Cworkspace/TADA-HDT/dbpedia_all.hdt");
     //std::list<string> *properties;
@@ -79,7 +198,7 @@ void store_num_cols(string hdt_file_dir, string in_file_dir){
     delete hdt; // Remember to delete instance when no longer needed!
 }
 
-void store_single_class(HDT* hdt, string line){
+void Filternum::store_single_class(HDT* hdt, string line){
     int i=0;
     string property_uri, class_uri;
     std::list<string> *properties;
@@ -106,7 +225,7 @@ void store_single_class(HDT* hdt, string line){
     delete num_pros;
 }
 
-void write_single_class(string class_uri, std::list<string>* properties){
+void Filternum::write_single_class(string class_uri, std::list<string>* properties){
     ofstream f;
     string property_uri;
     f.open(numfile, ios::app);
@@ -119,7 +238,7 @@ void write_single_class(string class_uri, std::list<string>* properties){
     f.close();
 }
 
-bool isNumeric(HDT *hdt, std::list<string> *instances, string property_uri){
+bool Filternum::isNumeric(HDT *hdt, std::list<string> *instances, string property_uri){
     long num_of_num=0, num_of_lit=0;
     double v=0;
     int i;
@@ -142,41 +261,41 @@ bool isNumeric(HDT *hdt, std::list<string> *instances, string property_uri){
     return num_of_num > num_of_lit;
 }
 
-bool str_to_double(string s, double & val){
-    int i;
-    string num_str="";
-    bool got_dec;
-    got_dec=0;
-    for(i=0;i<s.length();i++){
-        if(s[i]>='0' && s[i]<='9'){
-            num_str += s[i];
-        }
-        else if(s[i]=='.' && !got_dec){
-            num_str += s[i];
-        }
-    }
-    if(num_str=="" || num_str=="."){
-        return 0;
-    }
-    else{
+//bool Filternum::str_to_double(string s, double & val){
+//    int i;
+//    string num_str="";
+//    bool got_dec;
+//    got_dec=0;
+//    for(i=0;i<s.length();i++){
+//        if(s[i]>='0' && s[i]<='9'){
+//            num_str += s[i];
+//        }
+//        else if(s[i]=='.' && !got_dec){
+//            num_str += s[i];
+//        }
+//    }
+//    if(num_str=="" || num_str=="."){
+//        return 0;
+//    }
+//    else{
 
-        val = strtod(num_str.c_str(),NULL);
-        return 1;
-    }
-}
+//        val = strtod(num_str.c_str(),NULL);
+//        return 1;
+//    }
+//}
 
-string get_class_from_line(string line){
-    int i;
-    for(i=0;i<line.length();i++){
-        if(line[i]=='\t' || line[i]=='\n'){
-            return line.substr(0,i);
-        }
-    }
-    return line;
-    //return "";
-}
+//string Filternum::get_class_from_line(string line){
+//    int i;
+//    for(i=0;i<line.length();i++){
+//        if(line[i]=='\t' || line[i]=='\n'){
+//            return line.substr(0,i);
+//        }
+//    }
+//    return line;
+//    //return "";
+//}
 
-std::list<string>* get_instances(HDT* hdt, string class_uri){
+std::list<string>* Filternum::get_instances(HDT* hdt, string class_uri){
     std::list<string> *instances;
     instances = new std::list<string>;
     //log(logfname, "getting instances for: "+class_uri);
@@ -193,7 +312,7 @@ std::list<string>* get_instances(HDT* hdt, string class_uri){
     return instances;
 }
 
-std::list<string> *get_properties_from_line(string line){
+std::list<string> * Filternum::get_properties_from_line(string line){
     std::list<string> *properties;
     int i,len;
     int start=0;
