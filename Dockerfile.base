@@ -1,9 +1,10 @@
-FROM ubuntu:latest
-
+#FROM ubuntu:latest
+FROM ahmad88me/googletest:latest
 RUN mkdir -p app
 WORKDIR /app
 
 COPY scripts scripts
 
-CMD ["sh", "scripts/setup.sh"]
+RUN sh scripts/setup.sh
+#CMD ["sh", "scripts/setup.sh"]
 

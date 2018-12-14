@@ -2,11 +2,12 @@ FROM ahmad88me/tadahdt:latest
 
 WORKDIR /app
 
-COPY makefile makefile
+COPY Makefile Makefile
 COPY src src
 #For .git is required for the coverage
 COPY .git .git
 COPY *.sh /app/
+COPY sample_golf.ttl /app/
 
 RUN mkdir -p build
 RUN mkdir -p bin
