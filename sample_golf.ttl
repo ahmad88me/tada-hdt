@@ -1,0 +1,70 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dbo: <http://dbpedia.org/ontology/> .
+@prefix dbpp: <http://dbpedia.org/ontology/Person/> .
+@prefix dbr: <http://dbpedia.org/resource/> .
+@prefix dbp: <http://dbpedia.org/property/> .
+
+dbr:player1 rdf:type dbo:GolfPlayer  .
+dbr:player2  rdf:type dbo:GolfPlayer  .
+dbr:player3  rdf:type dbo:GolfPlayer  .
+dbr:player4  rdf:type dbo:GolfPlayer  .
+dbr:player5  rdf:type dbo:GolfPlayer  .
+dbr:player6  rdf:type dbo:GolfPlayer  .
+dbr:player7  rdf:type dbo:GolfPlayer  .
+dbr:player8  rdf:type dbo:GolfPlayer  .
+
+dbr:player1 rdf:type dbo:Athlete  .
+dbr:player2  rdf:type dbo:Athlete  .
+dbr:player3  rdf:type dbo:Athlete  .
+dbr:player4  rdf:type dbo:Athlete  .
+dbr:player5  rdf:type dbo:Person  .
+dbr:player6  rdf:type dbo:Person  .
+dbr:player7  rdf:type dbo:Agent  .
+dbr:player8  rdf:type dbo:Agent  .
+
+dbr:player1 dbp:wrong_property "wrong" .
+
+dbr:player1 dbpp:height "180.34"^^<http://dbpedia.org/datatype/centimetre> .
+dbr:player2 dbpp:height "185.42"^^<http://dbpedia.org/datatype/centimetre> .
+dbr:player3 dbpp:height "165.1"^^<http://dbpedia.org/datatype/centimetre> .
+dbr:player4 dbpp:height "185.42"^^<http://dbpedia.org/datatype/centimetre> .
+dbr:player5 dbpp:height "175.26"^^<http://dbpedia.org/datatype/centimetre> .
+dbr:player6 dbpp:height "177.8"^^<http://dbpedia.org/datatype/centimetre> .
+dbr:player7 dbpp:height "185.0"^^<http://dbpedia.org/datatype/centimetre> .
+dbr:player8 dbpp:height "177.8"^^<http://dbpedia.org/datatype/centimetre> .
+
+
+dbr:player1 dbpp:weight "83.916"^^<http://dbpedia.org/datatype/kilogram> .
+dbr:player2 dbpp:weight "83.916"^^<http://dbpedia.org/datatype/kilogram> .
+dbr:player3 dbpp:weight "72.576"^^<http://dbpedia.org/datatype/kilogram> .
+dbr:player4 dbpp:weight "92.0808"^^<http://dbpedia.org/datatype/kilogram> .
+dbr:player5 dbpp:weight "86.184"^^<http://dbpedia.org/datatype/kilogram> .
+dbr:player6 dbpp:weight "80.0"^^<http://dbpedia.org/datatype/kilogram> .
+dbr:player7 dbpp:weight "93.0"^^<http://dbpedia.org/datatype/kilogram> .
+dbr:player8 dbpp:weight "81.0"^^<http://dbpedia.org/datatype/kilogram> .
+
+
+dbr:player1 dbp:children 2 .
+dbr:player2 dbp:children 0 .
+dbr:player3 dbp:children 1 .
+dbr:player4 dbp:children 3 .
+dbr:player5 dbp:children 4 .
+dbr:player6 dbp:children 7 .
+dbr:player7 dbp:children 1 .
+dbr:player8 dbp:children 2 .
+
+
+dbr:player1 dbp:retired 1987 .
+dbr:player2 dbp:retired 1941 .
+dbr:player3 dbp:retired 2012 .
+dbr:player4 dbp:retired 1996 .
+dbr:player5 dbp:retired 1989 .
+dbr:player6 dbp:retired 2001 .
+dbr:player7 dbp:retired 2006 .
+dbr:player8 dbp:retired 2009 .
+
+
+dbo:GoldPlayer rdfs:subClassOf dbo:Athlete .
+dbo:Athlete rdfs:subClassOf dbo:Person .
+dbo:Person rdfs:subClassOf dbo:Agent .
