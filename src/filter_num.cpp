@@ -33,95 +33,21 @@ Filternum::Filternum(string hdt_file_dir, string log_file_dir){
    m_logger = new EasyLogger(log_file_dir);
 }
 
-
-std::list<string>* Filternum::get_processed_classes(){
+std::list<string>* Filternum::get_processed_classes(string file_dir){
     string line;
     std::list<string> *classes = new std::list<string>;
-    ifstream in_file(numfile);
+    ifstream in_file(file_dir);
     if(in_file.is_open()){
         while(getline(in_file, line)){
             classes->push_back(get_class_from_line(line));
         }
     }
     else{
-        cout << "unable to open the file: " << numfile << endl;
+        m_logger->log("unable to open the file: "+file_dir);
+        cout << "unable to open the file: " << file_dir << endl;
     }
     return classes;
 }
-
-
-//std::list<string> *get_leaf_classes(string hdt_file_dir){
-//    HDT *hdt = HDTManager::mapIndexedHDT(hdt_file_dir.c_str());
-//    IteratorTripleString *itt;
-//    TripleString * triple;
-//    set<string> classes;
-//    std::list<string> *unique_classes = new std::list<string>;
-//    itt = hdt->search("", rdf_type.c_str(), "");
-//    long l=0;
-//    while(itt->hasNext()){
-//        //log(logfname, "counter: "+to_string(l)+"\tstored: "+to_string(classes.size()));
-//        triple = itt->next();
-//        classes.insert(triple->getObject());
-//        //log(logfname, "type: "+triple->getObject());
-//    }
-//    delete itt;
-//    // delete classes that has subclasses, we only want the leaves
-//    for(auto it=classes.cbegin();it!=classes.end();it++){
-//        itt = hdt->search("", rdfs_subclassof.c_str(), (*it).c_str());
-//        if(itt->hasNext()){
-//            //log(logfname, "discard: "+*it);
-//        }
-//        else{
-//            unique_classes->push_back(*it);
-//            //log(logfname, "include: "+*it);
-//        }
-//        delete itt;
-//    }
-//    log(logfname, "num of unique classes: "+to_string(unique_classes->size()));
-//    log(logfname, "num of leaves: "+to_string(unique_classes->size()));
-//    for(auto it=unique_classes->cbegin();it!=unique_classes->end();it++){
-//        log(logfname, "class: "+*it);
-//    }
-//    return unique_classes;
-//}
-
-
-//std::list<string> * Filternum::get_leaf_classes(){
-//    IteratorTripleString *itt;
-//    TripleString * triple;
-//    set<string> classes;
-//    std::list<string> *unique_classes = new std::list<string>;
-//    itt = hdt->search("", rdf_type.c_str(), "");
-//    long l=0;
-//    while(itt->hasNext()){
-//        //log(logfname, "counter: "+to_string(l)+"\tstored: "+to_string(classes.size()));
-//        triple = itt->next();
-//        classes.insert(triple->getObject());
-//        //log(logfname, "type: "+triple->getObject());
-//    }
-//    delete itt;
-//    // delete classes that has subclasses, we only want the leaves
-//    for(auto it=classes.cbegin();it!=classes.end();it++){
-//        itt = hdt->search("", rdfs_subclassof.c_str(), (*it).c_str());
-//        if(itt->hasNext()){
-//            //log(logfname, "discard: "+*it);
-//        }
-//        else{
-//            unique_classes->push_back(*it);
-//            //log(logfname, "include: "+*it);
-//        }
-//        delete itt;
-//    }
-//    m_logger->log("num of unique classes: "+to_string(unique_classes->size()));
-////    log(logfname, "num of unique classes: "+to_string(unique_classes->size()));
-//    m_logger->log("num of leaves: "+to_string(unique_classes->size()));
-////    log(logfname, "num of leaves: "+to_string(unique_classes->size()));
-//    for(auto it=unique_classes->cbegin();it!=unique_classes->end();it++){
-////        log(logfname, "class: "+*it);
-//        m_logger->log("class: "+*it);
-//    }
-//    return unique_classes;
-//}
 
 
 std::list<string> * Filternum::get_leaf_classes(){
@@ -180,6 +106,36 @@ void Filternum::automic_write_classes(string out_file_dir){
     delete leaves;
 }
 
+std::list<string>* Filternum::get_properties_of_class(string class_uri){
+    IteratorTripleString *itt;
+    TripleString * triple;
+    std::list<string>* properties = new std::list<string>;
+    std::list<string>* instances = get_instances(class_uri);
+    std::map<string,unsigned> *prop_counts = new std::map<string,unsigned>;
+    for(auto it_inst=instances->cbegin();it_inst!=instances->cend();it_inst++){
+        itt = hdt->search(it_inst->c_str(),"", "");
+        while(itt->hasNext()){
+            triple = itt->next();
+            if(prop_counts->find(triple->getPredicate()) != prop_counts->cend()){ // found
+                (*prop_counts)[triple->getPredicate()]++;
+            }
+            else{
+                (*prop_counts)[triple->getPredicate()] = 1;
+            }
+        }
+        delete itt;
+    }
+    m_logger->log("properties counts: ");
+    for(auto it=prop_counts->cbegin();it!=prop_counts->cend();it++){
+        m_logger->log(it->first+" - "+to_string(it->second));
+        if(it->second >= m_min_num_of_prop){
+            properties->push_back(it->first);
+        }
+    }
+    m_logger->log("included "+to_string(properties->size())+" out of "+to_string(prop_counts->size())+" properties");
+    return properties;
+}
+
 
 void Filternum::store_num_cols(string hdt_file_dir, string in_file_dir){
     HDT *hdt = HDTManager::mapHDT(hdt_file_dir.c_str());
@@ -189,7 +145,8 @@ void Filternum::store_num_cols(string hdt_file_dir, string in_file_dir){
     std::list<string> *processed;
     string line, class_uri;
     ifstream in_file(in_file_dir);
-    processed = get_processed_classes();
+    //processed = get_processed_classes();
+    // get processed classes is changed, I need to fix this
     bool found;
     int num_of_processed=0; // number of processed classes
     // testing block
@@ -235,7 +192,8 @@ void Filternum::store_single_class(HDT* hdt, string line){
     log(logfname, "getting properties for: "+class_uri);
     properties = get_properties_from_line(line);
     log(logfname, "getting instances for: "+class_uri);
-    instances = get_instances(hdt, class_uri);
+    //instances = get_instances(hdt, class_uri);
+    instances = get_instances(class_uri);
     for(auto it=properties->cbegin();it != properties->cend();it++, i++){
         property_uri = *it;
         log(logfname, "processing: "+class_uri+"\t"+property_uri);
@@ -322,7 +280,7 @@ bool Filternum::isNumeric(HDT *hdt, std::list<string> *instances, string propert
 //    //return "";
 //}
 
-std::list<string>* Filternum::get_instances(HDT* hdt, string class_uri){
+std::list<string>* Filternum::get_instances(string class_uri){
     std::list<string> *instances;
     instances = new std::list<string>;
     //log(logfname, "getting instances for: "+class_uri);

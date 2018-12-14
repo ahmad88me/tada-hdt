@@ -138,6 +138,11 @@ namespace {
         string class_property_file = "sample_golf_class_property_all.tsv";
         string property_num_file = "sample_golf_property_num.tsv";
         string classes_file = "test-classes.tsv";
+        string test_class = "http://dbpedia.org/ontology/GolfPlayer";
+        string log_file_dir = "test-filter.log";
+        std::list<string> *leaves;
+        std::list<string> *properties;
+
         // to remove the sample hdt file if it exists
         if(access( hdt_file.c_str(), F_OK ) != -1){
             remove(hdt_file.c_str());
@@ -148,11 +153,14 @@ namespace {
         if(access(classes_file.c_str(), F_OK ) != -1){
             remove(classes_file.c_str());
         }
+//        if(access(log_file_dir.c_str(), F_OK ) != -1){
+//            remove(log_file_dir.c_str());
+//        }
         ttl_to_hdt(input_file);
-        Filternum fn(hdt_file, "test-filter.log");
-        std::list<string> *leaves;
+        Filternum fn(hdt_file, log_file_dir);
         leaves = fn.get_leaf_classes();
         EXPECT_EQ(leaves->size(), 0);
+        delete leaves;
         fn.m_min_num_of_res = 1;
         leaves = fn.get_leaf_classes();
         EXPECT_EQ(leaves->size(), 1);
@@ -160,8 +168,21 @@ namespace {
         ifstream input_classes(classes_file);
         string s;
         input_classes >> s;
-        EXPECT_EQ(s, "http://dbpedia.org/ontology/GolfPlayer");
-        cout << "the content of the file is: " << s<<endl;
+        EXPECT_EQ(s, test_class);
+        properties = fn.get_properties_of_class(test_class);
+        EXPECT_EQ(properties->size(),0);
+        fn.m_min_num_of_prop = 1;
+        delete properties;
+        properties = fn.get_properties_of_class(test_class);
+        EXPECT_EQ(properties->size(),6);
+        fn.m_min_num_of_prop = 2;
+        delete properties;
+        properties = fn.get_properties_of_class(test_class);
+        EXPECT_EQ(properties->size(),5);
+//        fn.m_min_num_of_prop = 1;
+//        delete properties;
+//        properties = fn.get_properties_of_class(test_class);
+
         //write_classes(hdt_file,class_property_file);
         //store_num_cols(hdt_file, class_property_file);
         //write_features(hdt_file, property_num_file);
