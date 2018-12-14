@@ -13,6 +13,7 @@ TADA-HDT.qbs*
 *.tmp
 *.swp
 test-classes.tsv
+test-properties.tsv
 # sample_golf.ttl
 sample.ttl
 

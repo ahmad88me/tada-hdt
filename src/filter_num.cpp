@@ -136,6 +136,19 @@ std::list<string>* Filternum::get_properties_of_class(string class_uri){
     return properties;
 }
 
+void Filternum::write_properties(string classes_file_dir, string out_file){
+    std::list<string>* classes = get_processed_classes(classes_file_dir);
+    std::list<string>* properties;
+    // just to clear the file
+    ofstream f;
+    f.open(classes_file_dir, ios::out);
+    f.close();
+    for(auto it=classes->cbegin();it!=classes->cend();it++){
+        properties = get_properties_of_class(*it);
+        write_single_class(out_file, *it, properties);
+        delete properties;
+    }
+}
 
 void Filternum::store_num_cols(string hdt_file_dir, string in_file_dir){
     HDT *hdt = HDTManager::mapHDT(hdt_file_dir.c_str());
@@ -204,16 +217,17 @@ void Filternum::store_single_class(HDT* hdt, string line){
         else{
         }
     }
-    write_single_class(class_uri, num_pros);
+    // I have to fix it
+    //write_single_class(class_uri, num_pros);
     delete properties;
     delete instances;
     delete num_pros;
 }
 
-void Filternum::write_single_class(string class_uri, std::list<string>* properties){
+void Filternum::write_single_class(string file_dir, string class_uri, std::list<string>* properties){
     ofstream f;
     string property_uri;
-    f.open(numfile, ios::app);
+    f.open(file_dir, ios::app);
     f<< class_uri;
     for(auto it=properties->cbegin();it != properties->cend();it++){
         property_uri = *it;
@@ -222,6 +236,19 @@ void Filternum::write_single_class(string class_uri, std::list<string>* properti
     f << endl;
     f.close();
 }
+
+//void Filternum::write_single_class(string class_uri, std::list<string>* properties){
+//    ofstream f;
+//    string property_uri;
+//    f.open(numfile, ios::app);
+//    f<< class_uri;
+//    for(auto it=properties->cbegin();it != properties->cend();it++){
+//        property_uri = *it;
+//        f << "\t" << property_uri;
+//    }
+//    f << endl;
+//    f.close();
+//}
 
 bool Filternum::isNumeric(HDT *hdt, std::list<string> *instances, string property_uri){
     long num_of_num=0, num_of_lit=0;

@@ -9,7 +9,11 @@
 #include "common.h"
 #include "filter_num.h"
 
-
+void delete_if_exists(string file_dir){
+    if(access(file_dir.c_str(), F_OK ) != -1){
+        remove(file_dir.c_str());
+    }
+}
 
 void ttl_to_hdt(string ttl_dir){
     HDTSpecification spec("");
@@ -138,21 +142,31 @@ namespace {
         string class_property_file = "sample_golf_class_property_all.tsv";
         string property_num_file = "sample_golf_property_num.tsv";
         string classes_file = "test-classes.tsv";
+        string properties_file = "test-properties.tsv";
         string test_class = "http://dbpedia.org/ontology/GolfPlayer";
         string log_file_dir = "test-filter.log";
         std::list<string> *leaves;
         std::list<string> *properties;
 
         // to remove the sample hdt file if it exists
-        if(access( hdt_file.c_str(), F_OK ) != -1){
-            remove(hdt_file.c_str());
-        }
-        if(access(hdt_index.c_str(), F_OK ) != -1){
-            remove(hdt_index.c_str());
-        }
-        if(access(classes_file.c_str(), F_OK ) != -1){
-            remove(classes_file.c_str());
-        }
+
+        delete_if_exists(hdt_file);
+        delete_if_exists(hdt_index);
+        delete_if_exists(classes_file);
+        delete_if_exists(properties_file);
+
+//        if(access( hdt_file.c_str(), F_OK ) != -1){
+//            remove(hdt_file.c_str());
+//        }
+//        if(access(hdt_index.c_str(), F_OK ) != -1){
+//            remove(hdt_index.c_str());
+//        }
+//        if(access(classes_file.c_str(), F_OK ) != -1){
+//            remove(classes_file.c_str());
+//        }
+//        if(access(properties_file.c_str(), F_OK ) != -1){
+//            remove(properties_file.c_str());
+//        }
 //        if(access(log_file_dir.c_str(), F_OK ) != -1){
 //            remove(log_file_dir.c_str());
 //        }
@@ -166,7 +180,7 @@ namespace {
         EXPECT_EQ(leaves->size(), 1);
         fn.automic_write_classes("test-classes.tsv");
         ifstream input_classes(classes_file);
-        string s;
+        string s, t;
         input_classes >> s;
         EXPECT_EQ(s, test_class);
         properties = fn.get_properties_of_class(test_class);
@@ -179,6 +193,18 @@ namespace {
         delete properties;
         properties = fn.get_properties_of_class(test_class);
         EXPECT_EQ(properties->size(),5);
+        delete properties;
+        fn.write_properties(classes_file, properties_file);
+        ifstream input_properties(properties_file);
+        s = "";
+        while (std::getline(input_properties, t)){
+            s+=t;
+        }
+        string prop_res = "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
+                          "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
+                          "http://dbpedia.org/property/retired\thttp://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+        EXPECT_EQ(prop_res, s);
+
 //        fn.m_min_num_of_prop = 1;
 //        delete properties;
 //        properties = fn.get_properties_of_class(test_class);
@@ -201,8 +227,6 @@ namespace {
         ttl_to_hdt(input_file);
         EXPECT_NE(access( hdt_file.c_str(), F_OK ),-1);
     }
-
-
 
 }// namespace
 
