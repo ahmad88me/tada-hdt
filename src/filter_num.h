@@ -11,18 +11,18 @@ using namespace hdt;
 class Filternum{
 public:
     Filternum(string, string);
+
     std::list<string> *get_leaf_classes();
-    void automic_write_classes(string out_file_dir); // To fetch classes
+    void automic_write_classes(string out_file_dir); // To fetch classes and write them to a tsv file
+
     std::list<string>* get_properties_of_class(string class_uri);
-    void write_properties(string classes_file_dir, string out_file);
+    void write_properties(string classes_file_dir, string out_file); // To use the classes tsv file to extract all properties with enough properties (see m_min_num_of_prop)
 
-
-    //    bool str_to_double(string , double & );
     bool isNumeric(HDT*, std::list<string>*, string);
     void store_single_class(HDT* hdt, string line);
     void write_single_class(string file_dir, string class_uri, std::list<string>* properties);
     void store_num_cols(string, string);
-//    string get_class_from_line(string);
+
     std::list<string>* get_properties_from_line(string line);
     std::list<string> *get_instances(string class_uri);
     std::list<string> *get_processed_classes(string);

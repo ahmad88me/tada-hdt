@@ -14,6 +14,8 @@
 #include <list>
 #include <easy_logger/easy_logger.h>
 #include <unistd.h>
+#include <unordered_set>
+
 
 #include "filter_num.h"
 #include "logger.h"
@@ -139,15 +141,34 @@ std::list<string>* Filternum::get_properties_of_class(string class_uri){
 void Filternum::write_properties(string classes_file_dir, string out_file){
     std::list<string>* classes = get_processed_classes(classes_file_dir);
     std::list<string>* properties;
-    // just to clear the file
-    ofstream f;
-    f.open(classes_file_dir, ios::out);
-    f.close();
-    for(auto it=classes->cbegin();it!=classes->cend();it++){
-        properties = get_properties_of_class(*it);
-        write_single_class(out_file, *it, properties);
-        delete properties;
+//    // just to clear the file
+//    ofstream f;
+//    f.open(classes_file_dir, ios::out);
+//    f.close();
+
+
+    std::unordered_set<string> processed_classes;
+    std::list<string>* processed_classes_list = get_processed_classes(out_file);
+    for(auto it=processed_classes_list->cbegin();it!=processed_classes_list->cend();it++){
+        processed_classes.insert(*it);
     }
+    delete processed_classes_list;
+
+    for(auto it=classes->cbegin();it!=classes->cend();it++){
+        if(processed_classes.find((*it))==processed_classes.cend()){ // not found (it means not processed)
+            properties = get_properties_of_class(*it);
+            write_single_class(out_file, *it, properties);
+            delete properties;
+        }
+    }
+
+
+//    for(auto it=classes->cbegin();it!=classes->cend();it++){
+//        properties = get_properties_of_class(*it);
+//        write_single_class(out_file, *it, properties);
+//        delete properties;
+//    }
+
 }
 
 void Filternum::store_num_cols(string hdt_file_dir, string in_file_dir){

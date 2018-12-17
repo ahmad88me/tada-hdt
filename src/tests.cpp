@@ -148,28 +148,11 @@ namespace {
         std::list<string> *leaves;
         std::list<string> *properties;
 
-        // to remove the sample hdt file if it exists
-
         delete_if_exists(hdt_file);
         delete_if_exists(hdt_index);
         delete_if_exists(classes_file);
         delete_if_exists(properties_file);
 
-//        if(access( hdt_file.c_str(), F_OK ) != -1){
-//            remove(hdt_file.c_str());
-//        }
-//        if(access(hdt_index.c_str(), F_OK ) != -1){
-//            remove(hdt_index.c_str());
-//        }
-//        if(access(classes_file.c_str(), F_OK ) != -1){
-//            remove(classes_file.c_str());
-//        }
-//        if(access(properties_file.c_str(), F_OK ) != -1){
-//            remove(properties_file.c_str());
-//        }
-//        if(access(log_file_dir.c_str(), F_OK ) != -1){
-//            remove(log_file_dir.c_str());
-//        }
         ttl_to_hdt(input_file);
         Filternum fn(hdt_file, log_file_dir);
         leaves = fn.get_leaf_classes();
@@ -204,6 +187,20 @@ namespace {
                           "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
                           "http://dbpedia.org/property/retired\thttp://www.w3.org/1999/02/22-rdf-syntax-ns#type";
         EXPECT_EQ(prop_res, s);
+        // To check that it doesn't append and do resume the processing for extracting properties for the list of classes
+        fn.write_properties(classes_file, properties_file);
+        input_properties.close();
+        input_properties.open(properties_file);
+        s = "";
+        while (std::getline(input_properties, t)){
+            s+=t;
+        }
+        prop_res = "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
+                          "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
+                          "http://dbpedia.org/property/retired\thttp://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+        EXPECT_EQ(prop_res, s);
+
+
 
 //        fn.m_min_num_of_prop = 1;
 //        delete properties;
