@@ -11,22 +11,7 @@
 using namespace std;
 using namespace hdt;
 
-
-//void try_filter_class_property(string hdt_fname, string class_uri, string property_uri){
-//    HDT *hdt = HDTManager::mapHDT(hdt_fname.c_str());
-//    std::list<string>* instances=nullptr;
-//    instances = get_instances(hdt, class_uri);
-//    string line = compute_features_line(hdt, class_uri, property_uri, instances);
-//    cout << "line: "<<line<<endl;
-//}
-
-//extern string logfname;
-//extern string FEAT_FNAME;
-
-// Commit this to focus on the optimization
 int main(){
-//    logfname = "main-features.log";
-//    FEAT_FNAME = "main-features.tsv";
     string HDT_FNAME = "dbpedia_all.hdt";
     string CLASS_PROP_FNAME = "class_property_all.tsv";
     string NUM_PROP_FNAME = "class_property_num.tsv";

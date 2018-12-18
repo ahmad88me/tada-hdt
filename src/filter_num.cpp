@@ -154,17 +154,124 @@ void Filternum::write_properties(string classes_file_dir, string out_file){
 std::list<string>* Filternum::get_num_properties_from_line(string line){
     string class_uri = get_class_from_line(line);
     std::list<string>* properties = this->get_properties_from_line(line);
-    std::list<string>* instances = this->get_instances(class_uri);
+    std::list<string>* instances=nullptr;// = this->get_instances(class_uri);
     std::list<string>* num_properties = new std::list<string>;
     for(auto it=properties->cbegin();it!=properties->cend();it++){
-        if(this->isNumeric(instances, *it)){ // *it is the uri of a property
+        //if(this->isNumeric(instances, *it)){ // *it is the uri of a property
+        if(this->fast_is_numeric(class_uri, *it,&instances)){
             num_properties->push_back(*it);
         }
     }
-    delete instances;
+
+    if(instances!=nullptr){
+        delete instances;
+    }
     delete properties;
     return num_properties;
 }
+
+
+bool Filternum::fast_is_numeric(string class_uri, string property_uri, std::list<string>** instances_addr){
+    string line;
+    IteratorTripleString *itt;
+    TripleString * triple;
+    double v;
+    unsigned long num_of_numeric=0, num_of_letrals=0;
+    size_t estimated_of_class, estimated_of_property;
+    itt = hdt->search("", property_uri.c_str(), "");
+    estimated_of_property = itt->estimatedNumResults();
+    delete itt;
+    itt = hdt->search("", rdf_type.c_str(), class_uri.c_str());
+    estimated_of_class = itt->estimatedNumResults();
+    delete itt;
+    std::list<string>* instances_of_class = new std::list<string>; // instances of a given class
+    std::list<string>* instances_of_property = new std::list<string>; // instances that has a given property
+    std::list<string>* instances = new std::list<string>; // a holder of the join of the two
+    m_logger->log("num of instances of the class <"+class_uri+">: "+to_string(estimated_of_class));
+    m_logger->log("num of instances that has the property <"+property_uri+">: "+to_string(estimated_of_property));
+    if(estimated_of_property < estimated_of_class){
+        m_logger->log("SWAP!");
+        m_logger->log("Getting the instance for the property: "+property_uri);
+        // get instances of a given property
+        itt = hdt->search("", property_uri.c_str(), "");
+        while(itt->hasNext()){
+            triple = itt->next();
+            instances_of_property->push_back(triple->getSubject());
+        }
+        delete itt;
+        // get instances that are of the type class_uri
+        for(auto it=instances_of_property->cbegin();it!=instances_of_property->cend();it++){
+            itt = hdt->search((*it).c_str(), rdf_type.c_str(), "");
+            if(itt->hasNext()){
+                instances->push_back(*it);
+            }
+            delete itt;
+        }
+        // get the objects of the correct instances
+        for(auto it=instances->cbegin();it!=instances->cend();it++){
+            itt = hdt->search((*it).c_str(), property_uri.c_str(), "");
+            if(itt->hasNext()){
+                triple = itt->next();
+                if(str_to_double(triple->getObject(),v)){
+                    //values->push_front(v);
+                    num_of_numeric++;
+                }
+                else{
+                    num_of_letrals++;
+                }
+            }
+            delete itt;
+        }
+    }
+    else{
+        m_logger->log("No swap!");
+        // if instances of a given class is already fetched before
+        if((*instances_addr)!=nullptr){
+            m_logger->log("use cached instances");
+            instances_of_class = (*instances_addr);
+        }
+        else{
+            m_logger->log("fetching instances for a the class: "+class_uri);
+            // get the entities for a given class
+            itt = hdt->search("", rdf_type.c_str(), class_uri.c_str());
+            while(itt->hasNext()){
+                triple = itt->next();
+                instances_of_class->push_back(triple->getSubject());
+            }
+            delete itt;
+            (*instances_addr) = instances_of_class;
+            //instances_addr = &instances_of_class;
+            if((*instances_addr)==nullptr){
+                m_logger->log("ERROR??");
+            }
+            else{
+                m_logger->log("locally ok: "+to_string((*instances_addr)->size()));
+            }
+        }
+        // get the objects for the class/property pairs
+        for(auto it=instances_of_class->cbegin();it!=instances_of_class->cend();it++){
+            //log(logfname, "internal hdt search");
+            itt = hdt->search((*it).c_str(), property_uri.c_str(), "");
+            //log(logfname, "has next? "+to_string(itt->hasNext()));
+            if(itt->hasNext()){
+                triple = itt->next();
+                if(str_to_double(triple->getObject(),v)){
+                    //values->push_front(v);
+                    num_of_numeric++;
+                }
+                else{
+                    num_of_letrals++;
+                }
+            }
+            delete itt;
+        }
+    }
+    delete instances;
+    delete instances_of_property;
+    return num_of_numeric > num_of_letrals;
+}
+
+
 
 
 void Filternum::write_numeric_prop(string properties_file_dir, string numeric_prop_file_dir){

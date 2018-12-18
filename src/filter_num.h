@@ -21,6 +21,7 @@ public:
     std::list<string>* get_num_properties_from_line(string line);
     void write_numeric_prop(string properties_file_dir, string numeric_prop_file_dir);
 
+    bool fast_is_numeric(string class_uri, string property_uri, std::list<string>** instances_addr);
     bool isNumeric(std::list<string>*, string);
 
     void write_single_class(string file_dir, string class_uri, std::list<string>* properties);
