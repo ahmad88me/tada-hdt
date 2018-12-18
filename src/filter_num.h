@@ -23,9 +23,7 @@ public:
 
     bool isNumeric(std::list<string>*, string);
 
-//    void store_single_class(string line);
     void write_single_class(string file_dir, string class_uri, std::list<string>* properties);
-    void store_num_cols(string, string);
 
     std::list<string>* get_properties_from_line(string line);
     std::list<string> *get_instances(string class_uri);

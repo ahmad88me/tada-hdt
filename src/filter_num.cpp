@@ -20,12 +20,6 @@
 #include "logger.h"
 #include "common.h"
 
-string numfile = "test-class_property_num.tsv";
-string logfname = "test-filter_num.log";
-//string numfile = "class_property_num.tsv";
-//string logfname = "filter_num.log";
-//static string rdf_type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-
 Filternum::Filternum(string hdt_file_dir, string log_file_dir){
    hdt = HDTManager::mapIndexedHDT(hdt_file_dir.c_str());
    m_logger = new EasyLogger(log_file_dir);
@@ -92,7 +86,7 @@ std::list<string> * Filternum::get_leaf_classes(){
 void Filternum::automic_write_classes(string out_file_dir){
     // if the file exists, then no need to proceed, because the data is already extracted
     if(access( out_file_dir.c_str(), F_OK ) != -1){
-        log(logfname, "The classes already extracted to: "+out_file_dir);
+        m_logger->log("The classes already extracted to: "+out_file_dir);
         return;
     }
     std::list<string> *leaves = get_leaf_classes();
@@ -236,17 +230,14 @@ bool Filternum::isNumeric(std::list<string> *instances, string property_uri){
 std::list<string>* Filternum::get_instances(string class_uri){
     std::list<string> *instances;
     instances = new std::list<string>;
-    //log(logfname, "getting instances for: "+class_uri);
     IteratorTripleString *it = hdt->search("", "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",class_uri.c_str());
     TripleString *triple;
     while(it->hasNext()){
         triple = it->next();
         instances->push_back(triple->getSubject());
-        //return instances;
     }
     delete it;
-    //delete triple;
-    log(logfname, "num of instances: "+to_string(instances->size()));
+    m_logger->log("num of instances: "+to_string(instances->size()));
     return instances;
 }
 
@@ -272,7 +263,7 @@ std::list<string> * Filternum::get_properties_from_line(string line){
     if(properties->size()> 0){
         properties->pop_front();// Remove the class, which is typically the first element in each line
     }
-    log(logfname, "num of properties: "+to_string(properties->size()));
+    m_logger->log("num of properties: "+to_string(properties->size()));
     return properties;
 }
 
