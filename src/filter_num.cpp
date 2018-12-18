@@ -196,84 +196,6 @@ void Filternum::write_numeric_prop(string properties_file_dir, string numeric_pr
 }
 
 
-
-void Filternum::store_num_cols(string hdt_file_dir, string in_file_dir){
-    HDT *hdt = HDTManager::mapHDT(hdt_file_dir.c_str());
-    //HDT *hdt = HDTManager::mapHDT("/Users/aalobaid/workspaces/Cworkspace/TADA-HDT/dbpedia_all.hdt");
-    //std::list<string> *properties;
-    //std::list<string> *instances;
-    std::list<string> *processed;
-    string line, class_uri;
-    ifstream in_file(in_file_dir);
-    //processed = get_processed_classes();
-    // get processed classes is changed, I need to fix this
-    bool found;
-    int num_of_processed=0; // number of processed classes
-    // testing block
-    //cout<< "testing one specific" << endl;
-    //store_single_class(hdt, "http://dbpedia.org/ontology/Village\thttp://dbpedia.org/property/areaImperial");
-    //cout<< "done"<<endl;
-    //return;
-    // testing block
-    log(logfname, "the number of processed classes: "+to_string(processed->size()));
-    if(in_file.is_open()){
-        while(getline(in_file, line)){
-            class_uri = get_class_from_line(line);
-            found = 0;
-            for(auto it=processed->cbegin();it!=processed->cend();it++){
-                if((*it)==class_uri){
-                    log(logfname, "The class "+class_uri+" is already processed");
-                    found = 1; 
-                    num_of_processed++;
-                    break;
-                }    
-            }
-            if(!found){
-                store_single_class(hdt, line);
-                num_of_processed++;
-            }
-            log(logfname, "Processed classes: "+to_string(num_of_processed));
-            //break;
-        }
-    }
-    else{
-        cout << "Can't open the file: " << in_file_dir << endl;
-    }
-    delete hdt; // Remember to delete instance when no longer needed!
-}
-
-
-void Filternum::store_single_class(HDT* hdt, string line){
-    int i=0;
-    string property_uri, class_uri;
-    std::list<string> *properties;
-    std::list<string> *instances;
-    std::list<string> * num_pros = new std::list<string>;
-    class_uri = get_class_from_line(line);
-    log(logfname, "getting properties for: "+class_uri);
-    properties = get_properties_from_line(line);
-    log(logfname, "getting instances for: "+class_uri);
-    //instances = get_instances(hdt, class_uri);
-    instances = get_instances(class_uri);
-    for(auto it=properties->cbegin();it != properties->cend();it++, i++){
-        property_uri = *it;
-        log(logfname, "processing: "+class_uri+"\t"+property_uri);
-        log(logfname, "property progress: ("+to_string(i*100/properties->size())+" %)");
-        if(isNumeric(instances, property_uri)){
-        //        if(isNumeric(hdt, instances, property_uri)){
-            num_pros->push_back(property_uri);
-        }
-        else{
-        }
-    }
-    // I have to fix it
-    //write_single_class(class_uri, num_pros);
-    delete properties;
-    delete instances;
-    delete num_pros;
-}
-
-
 void Filternum::write_single_class(string file_dir, string class_uri, std::list<string>* properties){
     ofstream f;
     string property_uri;
@@ -286,19 +208,6 @@ void Filternum::write_single_class(string file_dir, string class_uri, std::list<
     f << endl;
     f.close();
 }
-
-//void Filternum::write_single_class(string class_uri, std::list<string>* properties){
-//    ofstream f;
-//    string property_uri;
-//    f.open(numfile, ios::app);
-//    f<< class_uri;
-//    for(auto it=properties->cbegin();it != properties->cend();it++){
-//        property_uri = *it;
-//        f << "\t" << property_uri;
-//    }
-//    f << endl;
-//    f.close();
-//}
 
 
 bool Filternum::isNumeric(std::list<string> *instances, string property_uri){
@@ -320,43 +229,9 @@ bool Filternum::isNumeric(std::list<string> *instances, string property_uri){
         }
         delete it;
     }
-    log(logfname, "nums: "+to_string(num_of_num)+"  literals: "+to_string(num_of_lit));
+    m_logger->log("nums: "+to_string(num_of_num)+"  literals: "+to_string(num_of_lit));
     return num_of_num > num_of_lit;
 }
-
-//bool Filternum::str_to_double(string s, double & val){
-//    int i;
-//    string num_str="";
-//    bool got_dec;
-//    got_dec=0;
-//    for(i=0;i<s.length();i++){
-//        if(s[i]>='0' && s[i]<='9'){
-//            num_str += s[i];
-//        }
-//        else if(s[i]=='.' && !got_dec){
-//            num_str += s[i];
-//        }
-//    }
-//    if(num_str=="" || num_str=="."){
-//        return 0;
-//    }
-//    else{
-
-//        val = strtod(num_str.c_str(),NULL);
-//        return 1;
-//    }
-//}
-
-//string Filternum::get_class_from_line(string line){
-//    int i;
-//    for(i=0;i<line.length();i++){
-//        if(line[i]=='\t' || line[i]=='\n'){
-//            return line.substr(0,i);
-//        }
-//    }
-//    return line;
-//    //return "";
-//}
 
 std::list<string>* Filternum::get_instances(string class_uri){
     std::list<string> *instances;

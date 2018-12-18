@@ -22,7 +22,8 @@ public:
     void write_numeric_prop(string properties_file_dir, string numeric_prop_file_dir);
 
     bool isNumeric(std::list<string>*, string);
-    void store_single_class(HDT* hdt, string line);
+
+//    void store_single_class(string line);
     void write_single_class(string file_dir, string class_uri, std::list<string>* properties);
     void store_num_cols(string, string);
 

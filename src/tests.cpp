@@ -197,7 +197,6 @@ namespace {
                           "http://dbpedia.org/property/retired\thttp://www.w3.org/1999/02/22-rdf-syntax-ns#type";
         EXPECT_EQ(prop_res, s);
 
-
         // To check that it doesn't append and do resume the processing for extracting properties for the list of classes
         fn.write_properties(classes_file, properties_file);
         input_properties.close();
@@ -213,7 +212,6 @@ namespace {
                           "http://dbpedia.org/property/retired\thttp://www.w3.org/1999/02/22-rdf-syntax-ns#type";
         EXPECT_EQ(prop_res, s);
 
-
         // Test the numeric properties filtration
         fn.write_numeric_prop(properties_file, numeric_prop_file);
         ifstream input_numeric_prop(numeric_prop_file);
@@ -226,14 +224,6 @@ namespace {
                           "http://dbpedia.org/property/retired";
         EXPECT_EQ(num_res, s);
 
-
-//        fn.m_min_num_of_prop = 1;
-//        delete properties;
-//        properties = fn.get_properties_of_class(test_class);
-
-        //write_classes(hdt_file,class_property_file);
-        //store_num_cols(hdt_file, class_property_file);
-        //write_features(hdt_file, property_num_file);
     }
 
     TEST(UtilTest, TTLTOHDT){
