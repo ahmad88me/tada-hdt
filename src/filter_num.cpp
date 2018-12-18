@@ -16,12 +16,9 @@
 #include <unistd.h>
 #include <unordered_set>
 
-
 #include "filter_num.h"
 #include "logger.h"
 #include "common.h"
-
-
 
 
 string numfile = "test-class_property_num.tsv";
@@ -108,6 +105,7 @@ void Filternum::automic_write_classes(string out_file_dir){
     delete leaves;
 }
 
+
 std::list<string>* Filternum::get_properties_of_class(string class_uri){
     IteratorTripleString *itt;
     TripleString * triple;
@@ -138,14 +136,10 @@ std::list<string>* Filternum::get_properties_of_class(string class_uri){
     return properties;
 }
 
+
 void Filternum::write_properties(string classes_file_dir, string out_file){
     std::list<string>* classes = get_processed_classes(classes_file_dir);
     std::list<string>* properties;
-//    // just to clear the file
-//    ofstream f;
-//    f.open(classes_file_dir, ios::out);
-//    f.close();
-
 
     std::unordered_set<string> processed_classes;
     std::list<string>* processed_classes_list = get_processed_classes(out_file);
@@ -161,15 +155,8 @@ void Filternum::write_properties(string classes_file_dir, string out_file){
             delete properties;
         }
     }
-
-
-//    for(auto it=classes->cbegin();it!=classes->cend();it++){
-//        properties = get_properties_of_class(*it);
-//        write_single_class(out_file, *it, properties);
-//        delete properties;
-//    }
-
 }
+
 
 void Filternum::store_num_cols(string hdt_file_dir, string in_file_dir){
     HDT *hdt = HDTManager::mapHDT(hdt_file_dir.c_str());
@@ -216,6 +203,7 @@ void Filternum::store_num_cols(string hdt_file_dir, string in_file_dir){
     delete hdt; // Remember to delete instance when no longer needed!
 }
 
+
 void Filternum::store_single_class(HDT* hdt, string line){
     int i=0;
     string property_uri, class_uri;
@@ -245,6 +233,7 @@ void Filternum::store_single_class(HDT* hdt, string line){
     delete num_pros;
 }
 
+
 void Filternum::write_single_class(string file_dir, string class_uri, std::list<string>* properties){
     ofstream f;
     string property_uri;
@@ -270,6 +259,7 @@ void Filternum::write_single_class(string file_dir, string class_uri, std::list<
 //    f << endl;
 //    f.close();
 //}
+
 
 bool Filternum::isNumeric(HDT *hdt, std::list<string> *instances, string property_uri){
     long num_of_num=0, num_of_lit=0;
@@ -344,6 +334,7 @@ std::list<string>* Filternum::get_instances(string class_uri){
     log(logfname, "num of instances: "+to_string(instances->size()));
     return instances;
 }
+
 
 std::list<string> * Filternum::get_properties_from_line(string line){
     std::list<string> *properties;

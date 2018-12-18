@@ -38,6 +38,12 @@ namespace {
     double v;
     EXPECT_TRUE(str_to_double(s,v));
     EXPECT_EQ(v, 204.0);
+    EXPECT_FALSE(str_to_double("'a2.0",v));
+    EXPECT_FALSE(str_to_double("_a2.0",v));
+    EXPECT_TRUE(str_to_double("204a.4",v));
+    EXPECT_EQ(204,v);
+    EXPECT_FALSE(str_to_double(".123aa",v));
+    //EXPECT_FALSE(str_to_double("20a4.0",v));
     //cout<< "value: "<<v<<endl;
     }
 
@@ -171,11 +177,11 @@ namespace {
         fn.m_min_num_of_prop = 1;
         delete properties;
         properties = fn.get_properties_of_class(test_class);
-        EXPECT_EQ(properties->size(),6);
+        EXPECT_EQ(properties->size(),7);
         fn.m_min_num_of_prop = 2;
         delete properties;
         properties = fn.get_properties_of_class(test_class);
-        EXPECT_EQ(properties->size(),5);
+        EXPECT_EQ(properties->size(),6);
         delete properties;
         fn.write_properties(classes_file, properties_file);
         ifstream input_properties(properties_file);
@@ -185,6 +191,7 @@ namespace {
         }
         string prop_res = "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
                           "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
+                          "http://dbpedia.org/property/name\t"
                           "http://dbpedia.org/property/retired\thttp://www.w3.org/1999/02/22-rdf-syntax-ns#type";
         EXPECT_EQ(prop_res, s);
         // To check that it doesn't append and do resume the processing for extracting properties for the list of classes
@@ -197,8 +204,10 @@ namespace {
         }
         prop_res = "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
                           "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
+                          "http://dbpedia.org/property/name\t"
                           "http://dbpedia.org/property/retired\thttp://www.w3.org/1999/02/22-rdf-syntax-ns#type";
         EXPECT_EQ(prop_res, s);
+
 
 
 

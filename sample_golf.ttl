@@ -64,6 +64,14 @@ dbr:player6 dbp:retired 2001 .
 dbr:player7 dbp:retired 2006 .
 dbr:player8 dbp:retired 2009 .
 
+dbr:player1 dbp:name "aaaa" .
+dbr:player2 dbp:name "23aa" .
+dbr:player3 dbp:name ".12" .
+dbr:player4 dbp:name "some name" .
+dbr:player5 dbp:name "_and another213" .
+dbr:player6 dbp:name "sample name" .
+dbr:player7 dbp:name "and another" .
+dbr:player8 dbp:name "first and last" .
 
 dbo:GoldPlayer rdfs:subClassOf dbo:Athlete .
 dbo:Athlete rdfs:subClassOf dbo:Person .
