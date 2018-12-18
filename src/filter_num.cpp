@@ -20,7 +20,6 @@
 #include "logger.h"
 #include "common.h"
 
-
 string numfile = "test-class_property_num.tsv";
 string logfname = "test-filter_num.log";
 //string numfile = "class_property_num.tsv";
@@ -31,6 +30,7 @@ Filternum::Filternum(string hdt_file_dir, string log_file_dir){
    hdt = HDTManager::mapIndexedHDT(hdt_file_dir.c_str());
    m_logger = new EasyLogger(log_file_dir);
 }
+
 
 std::list<string>* Filternum::get_processed_classes(string file_dir){
     string line;
@@ -151,11 +151,50 @@ void Filternum::write_properties(string classes_file_dir, string out_file){
     for(auto it=classes->cbegin();it!=classes->cend();it++){
         if(processed_classes.find((*it))==processed_classes.cend()){ // not found (it means not processed)
             properties = get_properties_of_class(*it);
-            write_single_class(out_file, *it, properties);
+            write_single_class(out_file, *it, properties); // *it is the class_uri
             delete properties;
         }
     }
 }
+
+std::list<string>* Filternum::get_num_properties_from_line(string line){
+    string class_uri = get_class_from_line(line);
+    std::list<string>* properties = this->get_properties_from_line(line);
+    std::list<string>* instances = this->get_instances(class_uri);
+    std::list<string>* num_properties = new std::list<string>;
+    for(auto it=properties->cbegin();it!=properties->cend();it++){
+        if(this->isNumeric(instances, *it)){ // *it is the uri of a property
+            num_properties->push_back(*it);
+        }
+    }
+    delete instances;
+    delete properties;
+    return num_properties;
+}
+
+
+void Filternum::write_numeric_prop(string properties_file_dir, string numeric_prop_file_dir){
+    std::list<string>* processed_classes_list = this->get_processed_classes(numeric_prop_file_dir);
+    std::unordered_set<string> processed_classes;
+
+    for(auto it=processed_classes_list->cbegin();it!=processed_classes_list->cend();it++){
+        processed_classes.insert(*it);
+    }
+
+    ifstream prop_file(properties_file_dir);
+    string line;
+    string class_uri;
+    std::list<string>* properties;
+    while(getline(prop_file, line)){
+        class_uri = get_class_from_line(line);
+        if(processed_classes.find(class_uri)==processed_classes.cend()){ // not found
+            properties = this->get_num_properties_from_line(line);
+            this->write_single_class(numeric_prop_file_dir, class_uri, properties);
+            delete properties;
+        }
+    }
+}
+
 
 
 void Filternum::store_num_cols(string hdt_file_dir, string in_file_dir){
@@ -220,7 +259,8 @@ void Filternum::store_single_class(HDT* hdt, string line){
         property_uri = *it;
         log(logfname, "processing: "+class_uri+"\t"+property_uri);
         log(logfname, "property progress: ("+to_string(i*100/properties->size())+" %)");
-        if(isNumeric(hdt, instances, property_uri)){
+        if(isNumeric(instances, property_uri)){
+        //        if(isNumeric(hdt, instances, property_uri)){
             num_pros->push_back(property_uri);
         }
         else{
@@ -261,7 +301,7 @@ void Filternum::write_single_class(string file_dir, string class_uri, std::list<
 //}
 
 
-bool Filternum::isNumeric(HDT *hdt, std::list<string> *instances, string property_uri){
+bool Filternum::isNumeric(std::list<string> *instances, string property_uri){
     long num_of_num=0, num_of_lit=0;
     double v=0;
     int i;

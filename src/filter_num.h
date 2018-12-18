@@ -18,7 +18,10 @@ public:
     std::list<string>* get_properties_of_class(string class_uri);
     void write_properties(string classes_file_dir, string out_file); // To use the classes tsv file to extract all properties with enough properties (see m_min_num_of_prop)
 
-    bool isNumeric(HDT*, std::list<string>*, string);
+    std::list<string>* get_num_properties_from_line(string line);
+    void write_numeric_prop(string properties_file_dir, string numeric_prop_file_dir);
+
+    bool isNumeric(std::list<string>*, string);
     void store_single_class(HDT* hdt, string line);
     void write_single_class(string file_dir, string class_uri, std::list<string>* properties);
     void store_num_cols(string, string);

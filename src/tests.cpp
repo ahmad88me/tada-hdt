@@ -149,6 +149,7 @@ namespace {
         string property_num_file = "sample_golf_property_num.tsv";
         string classes_file = "test-classes.tsv";
         string properties_file = "test-properties.tsv";
+        string numeric_prop_file = "test-numeric.tsv";
         string test_class = "http://dbpedia.org/ontology/GolfPlayer";
         string log_file_dir = "test-filter.log";
         std::list<string> *leaves;
@@ -158,6 +159,7 @@ namespace {
         delete_if_exists(hdt_index);
         delete_if_exists(classes_file);
         delete_if_exists(properties_file);
+        delete_if_exists(numeric_prop_file);
 
         ttl_to_hdt(input_file);
         Filternum fn(hdt_file, log_file_dir);
@@ -167,7 +169,7 @@ namespace {
         fn.m_min_num_of_res = 1;
         leaves = fn.get_leaf_classes();
         EXPECT_EQ(leaves->size(), 1);
-        fn.automic_write_classes("test-classes.tsv");
+        fn.automic_write_classes(classes_file);
         ifstream input_classes(classes_file);
         string s, t;
         input_classes >> s;
@@ -194,9 +196,12 @@ namespace {
                           "http://dbpedia.org/property/name\t"
                           "http://dbpedia.org/property/retired\thttp://www.w3.org/1999/02/22-rdf-syntax-ns#type";
         EXPECT_EQ(prop_res, s);
+
+
         // To check that it doesn't append and do resume the processing for extracting properties for the list of classes
         fn.write_properties(classes_file, properties_file);
         input_properties.close();
+
         input_properties.open(properties_file);
         s = "";
         while (std::getline(input_properties, t)){
@@ -209,6 +214,17 @@ namespace {
         EXPECT_EQ(prop_res, s);
 
 
+        // Test the numeric properties filtration
+        fn.write_numeric_prop(properties_file, numeric_prop_file);
+        ifstream input_numeric_prop(numeric_prop_file);
+        s = "";
+        while (std::getline(input_numeric_prop, t)){
+            s+=t;
+        }
+        string num_res = "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
+                          "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
+                          "http://dbpedia.org/property/retired";
+        EXPECT_EQ(num_res, s);
 
 
 //        fn.m_min_num_of_prop = 1;
