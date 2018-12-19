@@ -57,12 +57,7 @@ dbr:player8 dbp:children 2 .
 
 dbr:player1 dbp:retired 1987 .
 dbr:player2 dbp:retired 1941 .
-dbr:player3 dbp:retired 2012 .
-dbr:player4 dbp:retired 1996 .
-dbr:player5 dbp:retired 1989 .
-dbr:player6 dbp:retired 2001 .
-dbr:player7 dbp:retired 2006 .
-dbr:player8 dbp:retired 2009 .
+
 
 dbr:player1 dbp:name "aaaa" .
 dbr:player2 dbp:name "23aa" .
