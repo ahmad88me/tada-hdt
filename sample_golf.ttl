@@ -5,6 +5,20 @@
 @prefix dbr: <http://dbpedia.org/resource/> .
 @prefix dbp: <http://dbpedia.org/property/> .
 
+
+dbr:company1 rdf:type dbo:Company  .
+dbr:company2  rdf:type dbo:Company  .
+dbr:company3  rdf:type dbo:Company  .
+
+dbr:company1 dbp:name "Company AAA"  .
+dbr:company2  dbp:name "Company BB"  .
+dbr:company3  dbp:name "Company CCC" .
+
+dbr:company1 dbp:employees 120  .
+dbr:company2  dbp:employees 90  .
+dbr:company3  dbp:employees 21 .
+
+
 dbr:player1 rdf:type dbo:GolfPlayer  .
 dbr:player2  rdf:type dbo:GolfPlayer  .
 dbr:player3  rdf:type dbo:GolfPlayer  .
@@ -22,6 +36,15 @@ dbr:player5  rdf:type dbo:Person  .
 dbr:player6  rdf:type dbo:Person  .
 dbr:player7  rdf:type dbo:Agent  .
 dbr:player8  rdf:type dbo:Agent  .
+
+
+
+
+
+
+
+
+
 
 dbr:player1 dbp:wrong_property "wrong" .
 
@@ -68,6 +91,19 @@ dbr:player6 dbp:name "sample name" .
 dbr:player7 dbp:name "and another" .
 dbr:player8 dbp:name "first and last" .
 
+
+
+
+
+
+
+
+
+
+
+
 dbo:GoldPlayer rdfs:subClassOf dbo:Athlete .
 dbo:Athlete rdfs:subClassOf dbo:Person .
 dbo:Person rdfs:subClassOf dbo:Agent .
+dbo:Company rdfs:subClassOf dbo:Organisation .
+dbo:Organisation rdfs:subClassOf dbo:Agent .

@@ -151,6 +151,7 @@ namespace {
         string properties_file = "test-properties.tsv";
         string numeric_prop_file = "test-numeric.tsv";
         string test_class = "http://dbpedia.org/ontology/GolfPlayer";
+        string test_class2 = "http://dbpedia.org/ontology/Company";
         string log_file_dir = "test-filter.log";
         std::list<string> *leaves;
         std::list<string> *properties;
@@ -164,26 +165,34 @@ namespace {
         ttl_to_hdt(input_file);
         Filternum fn(hdt_file, log_file_dir);
         leaves = fn.get_leaf_classes();
-        EXPECT_EQ(leaves->size(), 0);
+        ASSERT_EQ(leaves->size(), 0);
         delete leaves;
         fn.m_min_num_of_res = 1;
         leaves = fn.get_leaf_classes();
-        EXPECT_EQ(leaves->size(), 1);
+        ASSERT_EQ(leaves->size(), 2);
         fn.automic_write_classes(classes_file);
         ifstream input_classes(classes_file);
-        string s, t;
-        input_classes >> s;
-        EXPECT_EQ(s, test_class);
+        string s, t;        
+        s = "";
+        while (std::getline(input_classes, t)){
+            cout << "t: "<<t<<endl;
+            s+=t;
+            s+="\n";
+        }
+        t = test_class2+"\n"+test_class+"\n";
+        cout<<"\n\n\nchecking s: "<<s<<endl;
+        cout<<"\n t: "<<t<<endl;
+        ASSERT_EQ(s, t);
         properties = fn.get_properties_of_class(test_class);
-        EXPECT_EQ(properties->size(),0);
+        ASSERT_EQ(properties->size(),0);
         fn.m_min_num_of_prop = 1;
         delete properties;
         properties = fn.get_properties_of_class(test_class);
-        EXPECT_EQ(properties->size(),7);
+        ASSERT_EQ(properties->size(), 7);
         fn.m_min_num_of_prop = 2;
         delete properties;
         properties = fn.get_properties_of_class(test_class);
-        EXPECT_EQ(properties->size(),6);
+        ASSERT_EQ(properties->size(),6);
         delete properties;
         fn.write_properties(classes_file, properties_file);
         ifstream input_properties(properties_file);
@@ -191,11 +200,15 @@ namespace {
         while (std::getline(input_properties, t)){
             s+=t;
         }
-        string prop_res = "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
-                          "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
-                          "http://dbpedia.org/property/name\t"
-                          "http://dbpedia.org/property/retired\thttp://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-        EXPECT_EQ(prop_res, s);
+        string prop_res;
+
+        prop_res = "http://dbpedia.org/ontology/Company\thttp://dbpedia.org/property/employees\thttp://dbpedia.org/property/name\t"
+                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+                "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
+                "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
+                "http://dbpedia.org/property/name\t"
+                "http://dbpedia.org/property/retired\thttp://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+        ASSERT_EQ(prop_res, s);
 
         // To check that it doesn't append and do resume the processing for extracting properties for the list of classes
         fn.write_properties(classes_file, properties_file);
@@ -206,11 +219,14 @@ namespace {
         while (std::getline(input_properties, t)){
             s+=t;
         }
-        prop_res = "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
-                          "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
-                          "http://dbpedia.org/property/name\t"
-                          "http://dbpedia.org/property/retired\thttp://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-        EXPECT_EQ(prop_res, s);
+        prop_res = "http://dbpedia.org/ontology/Company\thttp://dbpedia.org/property/employees\thttp://dbpedia.org/property/name\t"
+                "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+                "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
+                "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
+                "http://dbpedia.org/property/name\t"
+                "http://dbpedia.org/property/retired\thttp://www.w3.org/1999/02/22-rdf-syntax-ns#type";
+        ASSERT_EQ(prop_res, s);
+
 
         // Test the numeric properties filtration
         fn.write_numeric_prop(properties_file, numeric_prop_file);
@@ -219,10 +235,42 @@ namespace {
         while (std::getline(input_numeric_prop, t)){
             s+=t;
         }
-        string num_res = "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
-                          "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
-                          "http://dbpedia.org/property/retired";
-        EXPECT_EQ(num_res, s);
+        input_numeric_prop.close();
+        string num_res = "http://dbpedia.org/ontology/Company\thttp://dbpedia.org/property/employees"
+                         "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
+                         "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
+                         "http://dbpedia.org/property/retired";
+        ASSERT_EQ(num_res, s);
+
+
+        // Test resume the filtration of numeric properties
+        ofstream output_numeric_prop;
+        output_numeric_prop.open(numeric_prop_file);
+        output_numeric_prop << "http://dbpedia.org/ontology/Company\thttp://dbpedia.org/property/employees";
+        output_numeric_prop.close();
+
+        input_numeric_prop.open(numeric_prop_file);
+        s = "";
+        while (std::getline(input_numeric_prop, t)){
+            s+=t;
+        }
+        cout << "\n\n\n\n\n feeded text: \n"<<s<<endl;
+        input_numeric_prop.close();
+
+//        fn.write_numeric_prop(properties_file, numeric_prop_file);
+
+//        input_numeric_prop.open(numeric_prop_file);
+//        s = "";
+//        while (std::getline(input_numeric_prop, t)){
+//            s+=t;
+//        }
+//        cout << "\n\n\n\n\n post filtration text: \n"<<s<<endl<<"\n\n\n";
+//        input_numeric_prop.close();
+
+////        string num_res = "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
+////                          "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
+////                          "http://dbpedia.org/property/retired";
+////        EXPECT_EQ(num_res, s);
 
     }
 
