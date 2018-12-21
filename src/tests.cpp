@@ -257,20 +257,49 @@ namespace {
         cout << "\n\n\n\n\n feeded text: \n"<<s<<endl;
         input_numeric_prop.close();
 
-//        fn.write_numeric_prop(properties_file, numeric_prop_file);
+        fn.write_numeric_prop(properties_file, numeric_prop_file);
 
-//        input_numeric_prop.open(numeric_prop_file);
-//        s = "";
-//        while (std::getline(input_numeric_prop, t)){
-//            s+=t;
-//        }
-//        cout << "\n\n\n\n\n post filtration text: \n"<<s<<endl<<"\n\n\n";
-//        input_numeric_prop.close();
+        input_numeric_prop.open(numeric_prop_file);
+        s = "";
+        while (std::getline(input_numeric_prop, t)){
+            s+=t;
+        }
+        cout << "\n\n\n\n\n post filtration text: \n"<<s<<endl<<"\n\n\n";
+        input_numeric_prop.close();
+        num_res = "http://dbpedia.org/ontology/Company	http://dbpedia.org/property/employees"
+                  "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
+                  "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
+                  "http://dbpedia.org/property/retired";
+        ASSERT_EQ(num_res, s);
 
-////        string num_res = "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
-////                          "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
-////                          "http://dbpedia.org/property/retired";
-////        EXPECT_EQ(num_res, s);
+        // Test resume the filtration of numeric properties with reversed order (to make is the file is not just overwritten)
+        output_numeric_prop.open(numeric_prop_file);
+        output_numeric_prop << "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t";
+        output_numeric_prop << "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t";
+        output_numeric_prop << "http://dbpedia.org/property/retired";
+
+        output_numeric_prop.close();
+
+        input_numeric_prop.open(numeric_prop_file);
+        s = "";
+        while (std::getline(input_numeric_prop, t)){
+            s+=t;
+        }
+        input_numeric_prop.close();
+
+        fn.write_numeric_prop(properties_file, numeric_prop_file);
+
+        input_numeric_prop.open(numeric_prop_file);
+        s = "";
+        while (std::getline(input_numeric_prop, t)){
+            s+=t;
+        }
+        input_numeric_prop.close();
+        num_res = "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
+                  "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
+                  "http://dbpedia.org/property/retired"
+                  "http://dbpedia.org/ontology/Company\thttp://dbpedia.org/property/employees";
+        ASSERT_EQ(num_res, s);
 
     }
 
