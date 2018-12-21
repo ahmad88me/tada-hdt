@@ -36,37 +36,37 @@ namespace {
     TEST(FeaturesTest, Teststrtodouble){
     string s = "\"204.0\"^^<http://dbpedia.org/datatype/centimetre>";
     double v;
-    EXPECT_TRUE(str_to_double(s,v));
-    EXPECT_EQ(v, 204.0);
-    EXPECT_FALSE(str_to_double("'a2.0",v));
-    EXPECT_FALSE(str_to_double("_a2.0",v));
-    EXPECT_TRUE(str_to_double("204a.4",v));
-    EXPECT_EQ(204,v);
-    EXPECT_FALSE(str_to_double(".123aa",v));
-    //EXPECT_FALSE(str_to_double("20a4.0",v));
+    ASSERT_TRUE(str_to_double(s,v));
+    ASSERT_EQ(v, 204.0);
+    ASSERT_FALSE(str_to_double("'a2.0",v));
+    ASSERT_FALSE(str_to_double("_a2.0",v));
+    ASSERT_TRUE(str_to_double("204a.4",v));
+    ASSERT_EQ(204,v);
+    ASSERT_FALSE(str_to_double(".123aa",v));
+    //ASSERT_FALSE(str_to_double("20a4.0",v));
     //cout<< "value: "<<v<<endl;
     }
 
     TEST(FeaturesTest, ClsProPairFromLine) {
         string class_uri = "http://dbpedia.org/ontology/Person";
         string property_uri = "http://dbpedia.org/ontology/Person/height";
-        EXPECT_EQ(1,1); // just to test the setup
-        //EXPECT_EQ(1,2); // just to test the fail
+        ASSERT_EQ(1,1); // just to test the setup
+        //ASSERT_EQ(1,2); // just to test the fail
         clspropair* pair1 =  get_clspropair_from_line(class_uri+"\t"+property_uri);
         clspropair* pair2 =  get_clspropair_from_line(class_uri+"\t"+property_uri);
-        EXPECT_EQ(*pair1, *pair2);
+        ASSERT_EQ(*pair1, *pair2);
         delete pair2, pair1;
         pair1 = get_clspropair_from_line(class_uri+"\t"+property_uri+"\t"+"123");
         pair2 = get_clspropair_from_line(class_uri+"\t"+property_uri+"\t"+"123");
-        EXPECT_EQ(*pair1, *pair2);
+        ASSERT_EQ(*pair1, *pair2);
         delete pair2, pair1;
         pair1 = get_clspropair_from_line(class_uri+"\t"+property_uri+"\n");
         pair2 = get_clspropair_from_line(class_uri+"\t"+property_uri+"\n");
-        EXPECT_EQ(*pair1, *pair2);
+        ASSERT_EQ(*pair1, *pair2);
         delete pair2, pair1;
         pair1 = get_clspropair_from_line(class_uri+"\t"+property_uri+"notthesame\t123");
         pair2 = get_clspropair_from_line(class_uri+"\t"+property_uri+"\t123");
-        EXPECT_NE(*pair1,*pair2);
+        ASSERT_NE(*pair1,*pair2);
         delete pair1, pair2;
     }
 
@@ -93,13 +93,13 @@ namespace {
         out_file.close();
         std::list<clspropair*>* processed_pairs;
         processed_pairs = get_processed_feat_clspairs(feat_test_file);
-        EXPECT_EQ(processed_pairs->size(),5);
-        EXPECT_EQ(processed_pairs->front()->class_uri,"http://dbpedia.org/ontology/Person");
-        EXPECT_EQ(processed_pairs->front()->property_uri,"http://dbpedia.org/ontology/Person/height");
-        EXPECT_EQ(processed_pairs->back()->class_uri,"http://dbpedia.org/ontology/test");
-        EXPECT_EQ(processed_pairs->back()->property_uri,"http://dbpedia.org/property/p1");
-        EXPECT_NE(processed_pairs->back()->class_uri,"http://dbpedia.org/ontology/wrong");
-        EXPECT_NE(processed_pairs->back()->property_uri,"http://dbpedia.org/ontology/wrong");
+        ASSERT_EQ(processed_pairs->size(),5);
+        ASSERT_EQ(processed_pairs->front()->class_uri,"http://dbpedia.org/ontology/Person");
+        ASSERT_EQ(processed_pairs->front()->property_uri,"http://dbpedia.org/ontology/Person/height");
+        ASSERT_EQ(processed_pairs->back()->class_uri,"http://dbpedia.org/ontology/test");
+        ASSERT_EQ(processed_pairs->back()->property_uri,"http://dbpedia.org/property/p1");
+        ASSERT_NE(processed_pairs->back()->class_uri,"http://dbpedia.org/ontology/wrong");
+        ASSERT_NE(processed_pairs->back()->property_uri,"http://dbpedia.org/ontology/wrong");
         delete processed_pairs;
         remove(feat_test_file.c_str());
     }
@@ -111,12 +111,12 @@ namespace {
         double mean_value = mean(&nums);
         double median_value = median(&nums);
         double std_value = stdev(&nums, mean_value);
-        EXPECT_EQ(mean_value, 55);
-        EXPECT_EQ(median_value, mean_value);
-        EXPECT_EQ(std_value, 45);
+        ASSERT_EQ(mean_value, 55);
+        ASSERT_EQ(median_value, mean_value);
+        ASSERT_EQ(std_value, 45);
         nums.push_back(11);
         median_value = median(&nums);
-        EXPECT_EQ(median_value, 11);
+        ASSERT_EQ(median_value, 11);
     }
 
     TEST(FeaturesTest, FeatsExt){
@@ -125,7 +125,7 @@ namespace {
         string prop2 = "http://anotherprop2";
         string line = class_uri+"\t"+prop1+"\t"+prop2;
         std::list<clspropair*>* pairs = get_pairs_from_numfilter(line);
-        EXPECT_EQ(pairs->size(), 2);
+        ASSERT_EQ(pairs->size(), 2);
         std::list<clspropair*>* mpairs = new std::list<clspropair*>;
         clspropair* pair = new clspropair;
         pair->class_uri = class_uri;
@@ -135,10 +135,10 @@ namespace {
         pair->class_uri = class_uri;
         pair->property_uri = prop2;
         mpairs->push_back(pair);
-        EXPECT_EQ((*(pairs->cbegin()))->class_uri,(*(mpairs->cbegin()))->class_uri);
-        EXPECT_EQ((*(pairs->cbegin()))->property_uri,(*(mpairs->cbegin()))->property_uri);
-        EXPECT_EQ(((pairs->back()))->class_uri,((mpairs->back()))->class_uri);
-        EXPECT_EQ(((pairs->back()))->property_uri,((mpairs->back()))->property_uri);
+        ASSERT_EQ((*(pairs->cbegin()))->class_uri,(*(mpairs->cbegin()))->class_uri);
+        ASSERT_EQ((*(pairs->cbegin()))->property_uri,(*(mpairs->cbegin()))->property_uri);
+        ASSERT_EQ(((pairs->back()))->class_uri,((mpairs->back()))->class_uri);
+        ASSERT_EQ(((pairs->back()))->property_uri,((mpairs->back()))->property_uri);
     }
 
     TEST(FeaturesTest, SampleFullTest){
@@ -175,13 +175,10 @@ namespace {
         string s, t;        
         s = "";
         while (std::getline(input_classes, t)){
-            cout << "t: "<<t<<endl;
             s+=t;
             s+="\n";
         }
         t = test_class2+"\n"+test_class+"\n";
-        cout<<"\n\n\nchecking s: "<<s<<endl;
-        cout<<"\n t: "<<t<<endl;
         ASSERT_EQ(s, t);
         properties = fn.get_properties_of_class(test_class);
         ASSERT_EQ(properties->size(),0);
@@ -249,14 +246,6 @@ namespace {
         output_numeric_prop << "http://dbpedia.org/ontology/Company\thttp://dbpedia.org/property/employees";
         output_numeric_prop.close();
 
-        input_numeric_prop.open(numeric_prop_file);
-        s = "";
-        while (std::getline(input_numeric_prop, t)){
-            s+=t;
-        }
-        cout << "\n\n\n\n\n feeded text: \n"<<s<<endl;
-        input_numeric_prop.close();
-
         fn.write_numeric_prop(properties_file, numeric_prop_file);
 
         input_numeric_prop.open(numeric_prop_file);
@@ -264,7 +253,6 @@ namespace {
         while (std::getline(input_numeric_prop, t)){
             s+=t;
         }
-        cout << "\n\n\n\n\n post filtration text: \n"<<s<<endl<<"\n\n\n";
         input_numeric_prop.close();
         num_res = "http://dbpedia.org/ontology/Company	http://dbpedia.org/property/employees"
                   "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
@@ -280,12 +268,12 @@ namespace {
 
         output_numeric_prop.close();
 
-        input_numeric_prop.open(numeric_prop_file);
-        s = "";
-        while (std::getline(input_numeric_prop, t)){
-            s+=t;
-        }
-        input_numeric_prop.close();
+//        input_numeric_prop.open(numeric_prop_file);
+//        s = "";
+//        while (std::getline(input_numeric_prop, t)){
+//            s+=t;
+//        }
+//        input_numeric_prop.close();
 
         fn.write_numeric_prop(properties_file, numeric_prop_file);
 
@@ -306,15 +294,15 @@ namespace {
     TEST(UtilTest, TTLTOHDT){
         string input_file = "sample_golf.ttl";
         string hdt_file = "sample_golf.hdt";
-        EXPECT_NE(access( input_file.c_str(), F_OK ),-1);
+        ASSERT_NE(access( input_file.c_str(), F_OK ),-1);
         bool success_removal_of_hdt=true;
         // to remove the sample hdt file if it exists
         if(access( hdt_file.c_str(), F_OK ) != -1){
             success_removal_of_hdt =  remove(hdt_file.c_str()) == 0;
         }
-        EXPECT_TRUE(success_removal_of_hdt);
+        ASSERT_TRUE(success_removal_of_hdt);
         ttl_to_hdt(input_file);
-        EXPECT_NE(access( hdt_file.c_str(), F_OK ),-1);
+        ASSERT_NE(access( hdt_file.c_str(), F_OK ),-1);
     }
 
 }// namespace

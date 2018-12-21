@@ -37,7 +37,6 @@ std::list<string>* Filternum::get_processed_classes(string file_dir){
     }
     else{
         m_logger->log("unable to open the file: "+file_dir);
-        cout << "unable to open the file: " << file_dir << endl;
     }
     return classes;
 }
@@ -289,13 +288,9 @@ void Filternum::write_numeric_prop(string properties_file_dir, string numeric_pr
     while(getline(prop_file, line)){
         class_uri = get_class_from_line(line);
         if(processed_classes.find(class_uri)==processed_classes.cend()){ // not found
-            cout<< "not found: "<<class_uri<<endl;
             properties = this->get_num_properties_from_line(line);
             this->write_single_class(numeric_prop_file_dir, class_uri, properties);
             delete properties;
-        }
-        else{
-            cout<< "is found: "<<class_uri<<endl;
         }
     }
 }
