@@ -141,7 +141,49 @@ namespace {
         ASSERT_EQ(((pairs->back()))->property_uri,((mpairs->back()))->property_uri);
     }
 
-    TEST(FeaturesTest, SampleFullTest){
+    TEST(FeaturesTest, WriteFeatures){
+        string input_file = "sample_golf.ttl";
+        string features_file = "sample-features.tsv";
+        string numeric_prop_file = "sample-num-prop.tsv";
+        string hdt_file = "sample_golf.hdt";
+        string hdt_index = hdt_file+".index.v1-1";
+        write_features(hdt_file, numeric_prop_file);
+
+        delete_if_exists(hdt_file);
+        delete_if_exists(hdt_index);
+        delete_if_exists(numeric_prop_file);
+        delete_if_exists(features_file);
+        ttl_to_hdt(input_file);
+
+        string s;
+        s = "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\thttp://dbpedia.org/ontology/Person/weight\t"
+            "http://dbpedia.org/property/children\thttp://dbpedia.org/property/retired\n"
+             "http://dbpedia.org/ontology/Company\thttp://dbpedia.org/property/employees";
+        ofstream out_num_prop_file(numeric_prop_file);
+        out_num_prop_file << s;
+        out_num_prop_file.close();
+        write_features(hdt_file, numeric_prop_file);
+
+        string generated="", line;
+
+        ifstream in_file(features_file);
+        if(in_file.is_open()){
+            while(getline(in_file, line)){
+                generated+=line;
+            }
+        }
+        string expected="http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t8\t178.000000\t179.070000\t6.505632"
+                "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/weight\t8\t83.000000\t83.000000\t6.374363"
+                "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/property/children\t8\t2.000000\t2.000000\t2.121320"
+                "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/property/retired\t2\t1964.000000\t1964.000000\t23.000000"
+                "http://dbpedia.org/ontology/Company\thttp://dbpedia.org/property/employees\t3\t77.000000\t90.000000\t41.448764";
+
+        cout << "generate: "<<generated<<endl;
+        cout << "expected: "<<expected<<endl;
+        ASSERT_EQ(expected, generated);
+    }
+
+    TEST(FeaturesTest, FullNumFilter){
         string input_file = "sample_golf.ttl";
         string hdt_file = "sample_golf.hdt";
         string hdt_index = hdt_file+".index.v1-1";

@@ -17,6 +17,8 @@ test-properties.tsv
 test-numeric.tsv
 # sample_golf.ttl
 sample.ttl
+sample-features.tsv
+sample-num-prop.tsv
 
 
 # massif output

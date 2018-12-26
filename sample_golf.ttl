@@ -58,11 +58,11 @@ dbr:player7 dbpp:height "185.0"^^<http://dbpedia.org/datatype/centimetre> .
 dbr:player8 dbpp:height "177.8"^^<http://dbpedia.org/datatype/centimetre> .
 
 
-dbr:player1 dbpp:weight "83.916"^^<http://dbpedia.org/datatype/kilogram> .
-dbr:player2 dbpp:weight "83.916"^^<http://dbpedia.org/datatype/kilogram> .
-dbr:player3 dbpp:weight "72.576"^^<http://dbpedia.org/datatype/kilogram> .
-dbr:player4 dbpp:weight "92.0808"^^<http://dbpedia.org/datatype/kilogram> .
-dbr:player5 dbpp:weight "86.184"^^<http://dbpedia.org/datatype/kilogram> .
+dbr:player1 dbpp:weight "83.0"^^<http://dbpedia.org/datatype/kilogram> .
+dbr:player2 dbpp:weight "83.0"^^<http://dbpedia.org/datatype/kilogram> .
+dbr:player3 dbpp:weight "72.5"^^<http://dbpedia.org/datatype/kilogram> .
+dbr:player4 dbpp:weight "92.5"^^<http://dbpedia.org/datatype/kilogram> .
+dbr:player5 dbpp:weight "86.4"^^<http://dbpedia.org/datatype/kilogram> .
 dbr:player6 dbpp:weight "80.0"^^<http://dbpedia.org/datatype/kilogram> .
 dbr:player7 dbpp:weight "93.0"^^<http://dbpedia.org/datatype/kilogram> .
 dbr:player8 dbpp:weight "81.0"^^<http://dbpedia.org/datatype/kilogram> .

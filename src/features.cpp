@@ -13,8 +13,14 @@
 #include "logger.h"
 #include "common.h"
 
-static string logfname = "tests-features.log";
-static string FEAT_FNAME = "tests-features.tsv";
+
+
+
+static string logfname = "sample-features.log";
+static string FEAT_FNAME = "sample-features.tsv";
+
+//static string logfname = "tests-features.log";
+//static string FEAT_FNAME = "tests-features.tsv";
 ////static string FEAT_FNAME = "features-min-height-BasketballPlayer.tsv";
 //static string rdf_type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 
