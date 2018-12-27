@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 #include <HDTEnums.hpp>
 #include <fstream>
+#include <algorithm>
 
 #include "features.h"
 #include "common.h"
@@ -147,7 +148,6 @@ namespace {
         string numeric_prop_file = "sample-num-prop.tsv";
         string hdt_file = "sample_golf.hdt";
         string hdt_index = hdt_file+".index.v1-1";
-        write_features(hdt_file, numeric_prop_file);
 
         delete_if_exists(hdt_file);
         delete_if_exists(hdt_index);
@@ -164,23 +164,87 @@ namespace {
         out_num_prop_file.close();
         write_features(hdt_file, numeric_prop_file);
 
-        string generated="", line;
+        string line;
+        size_t loc1, loc2;
 
+        std::list<std::list<double>*>* features_expected, *features_computed;// means, medians, stds;
+        features_computed = new std::list<std::list<double>*>;
+        features_expected = new std::list<std::list<double>*>;
+        // to test fail
+        //features_expected->push_back(new std::list<double>({8,178,179.07, 8}));
+        // to have the corret one
+        features_expected->push_back(new std::list<double>({8,178,179.07,  6.505632}));
+        features_expected->push_back(new std::list<double>({8, 83.000000,83.000000,6.374363}));
+        features_expected->push_back(new std::list<double>({8,2.000000,2.000000,2.121320}));
+        features_expected->push_back(new std::list<double>({2,1964.000000,1964.000000,23.000000}));
+        features_expected->push_back(new std::list<double>({3,77.000000,90.000000,41.448764}));
+
+
+
+        //features->back()->push_back(1);
+        string expected_pairs="", generated_pairs="";
+        expected_pairs = "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height"
+                         "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/weight"
+                         "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/property/children"
+                         "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/property/retired"
+                         "http://dbpedia.org/ontology/Company\thttp://dbpedia.org/property/employees";
+
+
+
+//        std::list<string> expected, generated;
+//        expected.push_back("http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height");
+//        expected.push_back("http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/weight");
+//        expected.push_back("http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/property/children");
+//        expected.push_back("http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/property/retired");
+//        expected.push_back("http://dbpedia.org/ontology/Company\thttp://dbpedia.org/property/employees");
+
+        size_t num_of_nums;
+        double d;
+        std::list<double> * features_per_pair;
         ifstream in_file(features_file);
         if(in_file.is_open()){
             while(getline(in_file, line)){
-                generated+=line;
+               loc1 = line.find_first_of("\t");
+               s = line.substr(0,loc1+1);
+               //s+= "\t";
+               line.replace(loc1, 1, "\n");
+               loc2 = line.find_first_of("\t");
+               s+= line.substr(loc1+1, loc2-loc1-1);
+               //cout << "<<" << s << ">>" << endl;
+               //generated.push_back(s);
+               generated_pairs += s;
+               // now collect the computed features
+               line.replace(loc2, 1, "\n");
+               num_of_nums = std::count(line.begin(), line.end(), '\t');
+               //cout << "num of tabs: "<<num_of_nums<<endl;
+               loc1 = loc2;
+               features_per_pair = new std::list<double>;
+               for(size_t i=0;i<num_of_nums+1;i++){
+                    loc2 = line.find_first_of("\t");
+                    if(loc2==-1){
+                        loc2 = line.size();
+                    }
+                    s = line.substr(loc1+1, loc2-loc1-1);
+                    ASSERT_TRUE(str_to_double(s,d));
+                    features_per_pair->push_back(d);
+                    line.replace(loc2, 1, "\n");
+                    loc1 = loc2;
+               }
+               features_computed->push_back(features_per_pair);
             }
         }
-        string expected="http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t8\t178.000000\t179.070000\t6.505632"
-                "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/weight\t8\t83.000000\t83.000000\t6.374363"
-                "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/property/children\t8\t2.000000\t2.000000\t2.121320"
-                "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/property/retired\t2\t1964.000000\t1964.000000\t23.000000"
-                "http://dbpedia.org/ontology/Company\thttp://dbpedia.org/property/employees\t3\t77.000000\t90.000000\t41.448764";
-
-        cout << "generate: "<<generated<<endl;
-        cout << "expected: "<<expected<<endl;
-        ASSERT_EQ(expected, generated);
+        auto ito1 = features_computed->cbegin();
+        auto ito2 = features_expected->cbegin();
+        auto iti1 = features_computed->front()->cbegin();
+        auto iti2 = features_expected->front()->cbegin();
+        for(;ito1 != features_computed->cend() && ito2!=features_expected->cend();ito1++, ito2++){
+            for(iti1 = (*ito1)->cbegin(), iti2 = (*ito2)->cbegin(); iti1 !=  (*ito1)->cend() && iti2 !=  (*ito2)->cend(); iti1++, iti2++){
+                cout << "computed: "<< *iti1 << " expected: " << *iti2 << endl;
+                ASSERT_FLOAT_EQ(*iti1, *iti2);
+            }
+            cout << "=======================\n"<<endl;
+        }
+        ASSERT_EQ(expected_pairs, generated_pairs);
     }
 
     TEST(FeaturesTest, FullNumFilter){
@@ -296,7 +360,7 @@ namespace {
             s+=t;
         }
         input_numeric_prop.close();
-        num_res = "http://dbpedia.org/ontology/Company	http://dbpedia.org/property/employees"
+        num_res = "http://dbpedia.org/ontology/Company\thttp://dbpedia.org/property/employees"
                   "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height\t"
                   "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
                   "http://dbpedia.org/property/retired";

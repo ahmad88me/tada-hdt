@@ -40,13 +40,13 @@ debug:
 	valgrind --tool=massif bin/tadanum --time-unit=B --stacks=yes
 
 test:
-	$(CC) -c $(TSOURCES_ABS)
+	$(CC)  ${CXXFLAGS} -c $(TSOURCES_ABS)
 	mv *.o build/
 	$(CC) -o $(TESTAPP) $(TOBJS_ABS) $(TLIBS)
 	$(TESTAPP)
 
 covnoclean:
-	$(CC) -c -fprofile-arcs -ftest-coverage -fPIC  $(TSOURCES_ABS)
+	$(CC) ${CXXFLAGS}  -c -fprofile-arcs -ftest-coverage -fPIC  $(TSOURCES_ABS)
 	mv *.o build/
 	$(CC) -o $(COVAPP) -fprofile-arcs -ftest-coverage $(TOBJS_ABS) $(TLIBS) 
 	$(COVAPP)
