@@ -44,8 +44,6 @@ namespace {
     ASSERT_TRUE(str_to_double("204a.4",v));
     ASSERT_EQ(204,v);
     ASSERT_FALSE(str_to_double(".123aa",v));
-    //ASSERT_FALSE(str_to_double("20a4.0",v));
-    //cout<< "value: "<<v<<endl;
     }
 
     TEST(FeaturesTest, ClsProPairFromLine) {
@@ -87,7 +85,6 @@ namespace {
             "http://dbpedia.org/ontology/test\thttp://dbpedia.org/property/p2\t1\t2\n"
             "http://dbpedia.org/ontology/test\thttp://dbpedia.org/property/p1\t1\t2\n"
             ;
-        //cout << "content: "<<endl<<content<<endl;
         string feat_test_file = "automated_test_features.tsv.tmp";
         ofstream out_file(feat_test_file);
         out_file << content;
@@ -178,10 +175,6 @@ namespace {
         features_expected->push_back(new std::list<double>({8,2.000000,2.000000,2.121320}));
         features_expected->push_back(new std::list<double>({2,1964.000000,1964.000000,23.000000}));
         features_expected->push_back(new std::list<double>({3,77.000000,90.000000,41.448764}));
-
-
-
-        //features->back()->push_back(1);
         string expected_pairs="", generated_pairs="";
         expected_pairs = "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height"
                          "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/weight"
@@ -206,17 +199,13 @@ namespace {
             while(getline(in_file, line)){
                loc1 = line.find_first_of("\t");
                s = line.substr(0,loc1+1);
-               //s+= "\t";
                line.replace(loc1, 1, "\n");
                loc2 = line.find_first_of("\t");
                s+= line.substr(loc1+1, loc2-loc1-1);
-               //cout << "<<" << s << ">>" << endl;
-               //generated.push_back(s);
                generated_pairs += s;
                // now collect the computed features
                line.replace(loc2, 1, "\n");
                num_of_nums = std::count(line.begin(), line.end(), '\t');
-               //cout << "num of tabs: "<<num_of_nums<<endl;
                loc1 = loc2;
                features_per_pair = new std::list<double>;
                for(size_t i=0;i<num_of_nums+1;i++){
@@ -239,10 +228,8 @@ namespace {
         auto iti2 = features_expected->front()->cbegin();
         for(;ito1 != features_computed->cend() && ito2!=features_expected->cend();ito1++, ito2++){
             for(iti1 = (*ito1)->cbegin(), iti2 = (*ito2)->cbegin(); iti1 !=  (*ito1)->cend() && iti2 !=  (*ito2)->cend(); iti1++, iti2++){
-                cout << "computed: "<< *iti1 << " expected: " << *iti2 << endl;
                 ASSERT_FLOAT_EQ(*iti1, *iti2);
             }
-            cout << "=======================\n"<<endl;
         }
         ASSERT_EQ(expected_pairs, generated_pairs);
     }
