@@ -1,6 +1,7 @@
 # TADA-HDT
 [![Build Status](https://semaphoreci.com/api/v1/ahmad88me/tada-hdt/branches/master/badge.svg)](https://semaphoreci.com/ahmad88me/tada-hdt)
 [![codecov](https://codecov.io/gh/ahmad88me/TADA-HDT/branch/master/graph/badge.svg)](https://codecov.io/gh/ahmad88me/TADA-HDT)
+[![cirrus-ci](https://api.cirrus-ci.com/github/ahmad88me/tada-hdt.svg](https://api.cirrus-ci.com/github/ahmad88me/tada-hdt)
 [![status](https://img.shields.io/badge/status-under%20development-ff69b4.svg)](https://github.com/ahmad88me/tada-hdt)
 
 
