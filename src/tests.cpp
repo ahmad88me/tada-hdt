@@ -10,6 +10,9 @@
 #include "common.h"
 #include "filter_num.h"
 
+string log_file = "tests.log";
+string hdt_file = "sample_golf.hdt";
+
 void delete_if_exists(string file_dir){
     if(access(file_dir.c_str(), F_OK ) != -1){
         remove(file_dir.c_str());
@@ -49,22 +52,23 @@ namespace {
     TEST(FeaturesTest, ClsProPairFromLine) {
         string class_uri = "http://dbpedia.org/ontology/Person";
         string property_uri = "http://dbpedia.org/ontology/Person/height";
+        Features feats(hdt_file, log_file);
         ASSERT_EQ(1,1); // just to test the setup
         //ASSERT_EQ(1,2); // just to test the fail
-        clspropair* pair1 =  get_clspropair_from_line(class_uri+"\t"+property_uri);
-        clspropair* pair2 =  get_clspropair_from_line(class_uri+"\t"+property_uri);
+        clspropair* pair1 =  feats.get_clspropair_from_line(class_uri+"\t"+property_uri);
+        clspropair* pair2 =  feats.get_clspropair_from_line(class_uri+"\t"+property_uri);
         ASSERT_EQ(*pair1, *pair2);
         delete pair2, pair1;
-        pair1 = get_clspropair_from_line(class_uri+"\t"+property_uri+"\t"+"123");
-        pair2 = get_clspropair_from_line(class_uri+"\t"+property_uri+"\t"+"123");
+        pair1 = feats.get_clspropair_from_line(class_uri+"\t"+property_uri+"\t"+"123");
+        pair2 = feats.get_clspropair_from_line(class_uri+"\t"+property_uri+"\t"+"123");
         ASSERT_EQ(*pair1, *pair2);
         delete pair2, pair1;
-        pair1 = get_clspropair_from_line(class_uri+"\t"+property_uri+"\n");
-        pair2 = get_clspropair_from_line(class_uri+"\t"+property_uri+"\n");
+        pair1 = feats.get_clspropair_from_line(class_uri+"\t"+property_uri+"\n");
+        pair2 = feats.get_clspropair_from_line(class_uri+"\t"+property_uri+"\n");
         ASSERT_EQ(*pair1, *pair2);
         delete pair2, pair1;
-        pair1 = get_clspropair_from_line(class_uri+"\t"+property_uri+"notthesame\t123");
-        pair2 = get_clspropair_from_line(class_uri+"\t"+property_uri+"\t123");
+        pair1 = feats.get_clspropair_from_line(class_uri+"\t"+property_uri+"notthesame\t123");
+        pair2 = feats.get_clspropair_from_line(class_uri+"\t"+property_uri+"\t123");
         ASSERT_NE(*pair1,*pair2);
         delete pair1, pair2;
     }
@@ -90,7 +94,7 @@ namespace {
         out_file << content;
         out_file.close();
         std::list<clspropair*>* processed_pairs;
-        processed_pairs = get_processed_feat_clspairs(feat_test_file);
+        processed_pairs = Features::get_processed_feat_clspairs(feat_test_file);
         ASSERT_EQ(processed_pairs->size(),5);
         ASSERT_EQ(processed_pairs->front()->class_uri,"http://dbpedia.org/ontology/Person");
         ASSERT_EQ(processed_pairs->front()->property_uri,"http://dbpedia.org/ontology/Person/height");
@@ -106,9 +110,9 @@ namespace {
         std::list<double> nums;
         nums.push_back(10);
         nums.push_back(100);
-        double mean_value = mean(&nums);
-        double median_value = median(&nums);
-        double std_value = stdev(&nums, mean_value);
+        double mean_value = Features::mean(&nums);
+        double median_value = Features::median(&nums);
+        double std_value = Features::stdev(&nums, mean_value);
         ASSERT_EQ(mean_value, 55);
         ASSERT_EQ(median_value, mean_value);
         ASSERT_EQ(std_value, 45);
@@ -122,7 +126,7 @@ namespace {
         string prop1 = "http://someprop1";
         string prop2 = "http://anotherprop2";
         string line = class_uri+"\t"+prop1+"\t"+prop2;
-        std::list<clspropair*>* pairs = get_pairs_from_numfilter(line);
+        std::list<clspropair*>* pairs = Features::get_pairs_from_numfilter(line);
         ASSERT_EQ(pairs->size(), 2);
         std::list<clspropair*>* mpairs = new std::list<clspropair*>;
         clspropair* pair = new clspropair;
@@ -159,8 +163,9 @@ namespace {
         ofstream out_num_prop_file(numeric_prop_file);
         out_num_prop_file << s;
         out_num_prop_file.close();
-        write_features(hdt_file, numeric_prop_file);
-
+        Features feat(hdt_file, log_file);
+        feat.features_fname = features_file;
+        feat.write_features(numeric_prop_file);
         string line;
         size_t loc1, loc2;
 

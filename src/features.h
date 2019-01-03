@@ -1,5 +1,6 @@
 #ifndef FEATURES_H
 #define FEATURES_H
+#include <easy_logger/easy_logger.h>
 #include <HDTManager.hpp>
 #include <list>
 using namespace hdt;
@@ -33,18 +34,52 @@ typedef struct clspropair{
     }
 } clspropair;
 
-std::list<clspropair*>* get_processed_feat_clspairs(string features_file_name);
-clspropair* get_clspropair_from_line(string line);
-void compute_store_features_for_pair(HDT* hdt, clspropair* pair, std::list<string>**);
-void write_features(string hdt_file_dir, string num_property_dir);
-clspropair* get_clspropair_from_line(string);
+
+
+//void compute_store_features_for_pair(clspropair*);
+
+
+
 double stdev(std::list<double>*, double); // standard deviation
 double median(std::list<double>*); // the value in the middle
 double mean(std::list<double>*); // avg
-//void compute_store_features_for_pair(clspropair*);
-void test_enty_point();
-std::list<clspropair*>* get_processed_feat_clspairs(string);
-string compute_features_line(HDT* hdt, string class_uri, string property_uri, std::list<string>**);
+std::list<clspropair*>* get_processed_feat_clspairs(string features_file_name);
+clspropair* get_clspropair_from_line(string line);
+void compute_store_features_for_pair(HDT* hdt, clspropair* pair, std::list<string>**);
 std::list<clspropair*>* get_pairs_from_numfilter(string line);
 std::list<string>* get_subset(std::list<string>*, int);
+string compute_features_line(HDT* hdt, string class_uri, string property_uri, std::list<string>**);
+void write_features(string hdt_file_dir, string num_property_dir);
+
+
+class Features{
+public:
+    Features(string, string);
+    static double stdev(std::list<double>*, double); // standard deviation
+    static double median(std::list<double>*); // the value in the middle
+    static double mean(std::list<double>*); // avg
+
+    static std::list<clspropair*>* get_processed_feat_clspairs(string features_file_name);
+    static clspropair* get_clspropair_from_line(string line);
+
+    void compute_store_features_for_pair(clspropair* pair, std::list<string>**);
+
+    static std::list<clspropair*>* get_pairs_from_numfilter(string line);
+
+    static std::list<string>* get_subset(std::list<string>*, int);
+    string compute_features_line(string class_uri, string property_uri, std::list<string>**);
+
+    void write_features(string num_property_dir);
+
+
+    string features_fname;
+
+private:
+    HDT* hdt;
+    EasyLogger* m_logger;
+};
+
+
+
+
 #endif
