@@ -5,9 +5,6 @@
 #include <list>
 using namespace hdt;
 
-//const string rdf_type = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
-
-
 typedef struct clspropair{
     string class_uri;
     string property_uri;
@@ -33,23 +30,6 @@ typedef struct clspropair{
     return !(l==r);
     }
 } clspropair;
-
-
-
-//void compute_store_features_for_pair(clspropair*);
-
-
-
-double stdev(std::list<double>*, double); // standard deviation
-double median(std::list<double>*); // the value in the middle
-double mean(std::list<double>*); // avg
-std::list<clspropair*>* get_processed_feat_clspairs(string features_file_name);
-clspropair* get_clspropair_from_line(string line);
-void compute_store_features_for_pair(HDT* hdt, clspropair* pair, std::list<string>**);
-std::list<clspropair*>* get_pairs_from_numfilter(string line);
-std::list<string>* get_subset(std::list<string>*, int);
-string compute_features_line(HDT* hdt, string class_uri, string property_uri, std::list<string>**);
-void write_features(string hdt_file_dir, string num_property_dir);
 
 
 class Features{
@@ -78,8 +58,5 @@ private:
     HDT* hdt;
     EasyLogger* m_logger;
 };
-
-
-
 
 #endif

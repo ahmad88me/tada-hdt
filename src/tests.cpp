@@ -89,8 +89,7 @@ namespace {
             "http://dbpedia.org/ontology/Person\thttp://dbpedia.org/ontology/Person/weight\t1\t2\n"
             "http://dbpedia.org/ontology/test\thttp://dbpedia.org/ontology/Person/P1\t1\t2\n"
             "http://dbpedia.org/ontology/test\thttp://dbpedia.org/property/p2\t1\t2\n"
-            "http://dbpedia.org/ontology/test\thttp://dbpedia.org/property/p1\t1\t2\n"
-            ;
+            "http://dbpedia.org/ontology/test\thttp://dbpedia.org/property/p1\t1\t2\n";
         string feat_test_file = "automated_test_features.tsv.tmp";
         ofstream out_file(feat_test_file);
         out_file << content;
@@ -119,7 +118,7 @@ namespace {
         ASSERT_EQ(median_value, mean_value);
         ASSERT_EQ(std_value, 45);
         nums.push_back(11);
-        median_value = median(&nums);
+        median_value = Features::median(&nums);
         ASSERT_EQ(median_value, 11);
     }
 
@@ -188,9 +187,6 @@ namespace {
                          "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/property/children"
                          "http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/property/retired"
                          "http://dbpedia.org/ontology/Company\thttp://dbpedia.org/property/employees";
-
-
-
 //        std::list<string> expected, generated;
 //        expected.push_back("http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/height");
 //        expected.push_back("http://dbpedia.org/ontology/GolfPlayer\thttp://dbpedia.org/ontology/Person/weight");
@@ -338,7 +334,6 @@ namespace {
                          "http://dbpedia.org/ontology/Person/weight\thttp://dbpedia.org/property/children\t"
                          "http://dbpedia.org/property/retired";
         ASSERT_EQ(num_res, s);
-
 
         // Test resume the filtration of numeric properties
         ofstream output_numeric_prop;
