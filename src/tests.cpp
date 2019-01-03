@@ -10,6 +10,7 @@
 #include "common.h"
 #include "filter_num.h"
 
+string input_file = "sample_golf.ttl";
 string log_file = "tests.log";
 string hdt_file = "sample_golf.hdt";
 
@@ -52,6 +53,7 @@ namespace {
     TEST(FeaturesTest, ClsProPairFromLine) {
         string class_uri = "http://dbpedia.org/ontology/Person";
         string property_uri = "http://dbpedia.org/ontology/Person/height";
+        ttl_to_hdt(input_file);
         Features feats(hdt_file, log_file);
         ASSERT_EQ(1,1); // just to test the setup
         //ASSERT_EQ(1,2); // just to test the fail
