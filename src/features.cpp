@@ -17,7 +17,7 @@ using namespace std;
 
 Features::Features(string hdt_file, string log_file){
     hdt = hdt::HDTManager::mapIndexedHDT(hdt_file.c_str());
-    m_logger = new EasyLogger(log_file);
+    //m_logger = new EasyLogger(log_file);
 }
 
 double Features::stdev(std::list<double>* values, double mean_value){
